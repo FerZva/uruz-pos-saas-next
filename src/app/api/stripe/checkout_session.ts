@@ -1,5 +1,5 @@
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY!);
-const priceID = "prod_R0xmS6xjJVxd4E";
+// const priceID = "prod_R0xmS6xjJVxd4E";
 
 export default async function handler(req: any, res: any) {
   switch (req.method) {
