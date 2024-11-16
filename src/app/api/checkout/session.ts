@@ -1,8 +1,9 @@
 // import { metadata } from "@/app/layout";
 // import { url } from "inspector";
+import { Stripe } from "stripe";
 import { NextResponse } from "next/server";
 
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY!);
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 export async function POST(request: Request) {
   try {
