@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
-import prisma from "@/app/lib/prisma";
+// import prisma from "@/app/lib/prisma";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
@@ -23,6 +23,6 @@ export async function POST(request: Request) {
 
   if (event.type === "customer.subscription.updated") {
     const subscription = event.data.object as Stripe.Subscription;
-    const userId = subscription.metadata.userId;
+    // const userId = subscription.metadata.userId;
   }
 }
