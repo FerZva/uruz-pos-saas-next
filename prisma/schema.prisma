@@ -9,99 +9,40 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
+enum Plan {
+  free
+  premium
+}
+
+enum subscriptionPeriod {
+  monthly
+  yearly
+}
+
 model User {
-  id            String         @id @default(uuid())
-  email         String         @unique
-  name          String?
-  role          Role           @default(USER)
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  stores        Store[]
-  subscriptions Subscription[]
-}
-
-enum Role {
-  USER
-  MANAGER
-  EMPLOYEE
-}
-
-model Store {
-  id        String     @id @default(uuid())
-  name      String
-  location  String?
-  products  Product[]
-  employees Employee[]
-  sales     Sale[]
-  createdAt DateTime   @default(now())
-  ownerId   String
-  owner     User       @relation(fields: [ownerId], references: [id])
-}
-
-model Product {
-  id         String    @id @default(uuid())
-  name       String
-  price      Float
-  stock      Int
-  store      Store     @relation(fields: [storeId], references: [id])
-  storeId    String
-  Sale       Sale?     @relation(fields: [saleId], references: [id])
-  saleId     String?
-  Provider   Provider? @relation(fields: [providerId], references: [id])
-  providerId String?
-}
-
-model Sale {
-  id         String    @id @default(uuid())
-  total      Float
-  createdAt  DateTime  @default(now())
-  products   Product[]
-  store      Store     @relation(fields: [storeId], references: [id])
-  storeId    String
-  customerId String?
-  customer   Client?   @relation(fields: [customerId], references: [id])
-}
-
-model Client {
-  id          String  @id @default(uuid())
-  name        String
-  email       String?
-  phoneNumber String?
-  sales       Sale[]
-}
-
-model Provider {
-  id          String    @id @default(uuid())
-  name        String
-  products    Product[]
-  contactInfo String?
-}
-
-model Employee {
-  id      String @id @default(uuid())
-  name    String
-  role    Role
-  salary  Float?
-  store   Store  @relation(fields: [storeId], references: [id])
-  storeId String
+  id             String        @id @default(cuid()) @map("_id")
+  email          String        @unique
+  name           String?
+  image          String?
+  plan           Plan          @default(free)
+  customerId     String?       @unique //Stripe customer ID, this will be important when we need to delete the subscription
+  Subscription   Subscription?
+  createdAt      DateTime      @default(now())
+  uptadedAt      DateTime      @updatedAt
+  subscriptionId String?
 }
 
 model Subscription {
-  id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
+  id        String             @id @default(cuid()) @map("_id")
+  userId    String             @unique
   plan      Plan
-  startDate DateTime
-  endDate   DateTime
-}
-
-enum Plan {
-  BUSINESS
-  BUSINESS_PLUS
-  BUSINESS_PREMIUM
-  TRIAL
+  period    subscriptionPeriod
+  startDate DateTime           @default(now())
+  createdAt DateTime           @default(now())
+  uptadedAt DateTime           @updatedAt
+  User      User               @relation(fields: [userId], references: [id])
 }
