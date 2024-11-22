@@ -4,6 +4,13 @@ import Stripe from "stripe";
 export async function POST(request: Request) {
   try {
     const { priceId } = await request.json();
+
+    if (!priceId) {
+      return NextResponse.json(
+        { error: "Price ID is required" },
+        { status: 400 }
+      );
+    }
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
     const session = await stripe.checkout.sessions.create({
@@ -25,5 +32,9 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.log("[STRIPE_CHECKOUT-ERROR]: ", error);
+    return NextResponse.json(
+      { error: "Failed to create checkout session" },
+      { status: 500 }
+    );
   }
 }

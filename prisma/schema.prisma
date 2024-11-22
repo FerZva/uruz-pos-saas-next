@@ -42,6 +42,7 @@ model Subscription {
   plan      Plan
   period    subscriptionPeriod
   startDate DateTime           @default(now())
+  endDate   DateTime
   createdAt DateTime           @default(now())
   uptadedAt DateTime           @updatedAt
   User      User               @relation(fields: [userId], references: [id])

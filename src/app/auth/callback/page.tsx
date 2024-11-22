@@ -2,27 +2,45 @@
 import React, { useEffect } from "react";
 import { Loader } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
+// import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 import { useQuery } from "@tanstack/react-query";
 import { checkAuthStatus } from "./actions";
 
 const CallBackPage = () => {
   const router = useRouter();
-  const { user } = useKindeBrowserClient();
+  // const { user } = useKindeBrowserClient();
   const { data } = useQuery({
     queryKey: ["checkAuthStatus"],
     queryFn: async () => checkAuthStatus(),
   });
 
   useEffect(() => {
-    const stripePaymentLink = localStorage.getItem("stripePaymentLink");
-    if (data?.success && stripePaymentLink && user?.email) {
-      localStorage.removeItem("stripePaymentLink");
-      router.push(stripePaymentLink + `?prefilled_email=${user.email}`);
+    const priceId = localStorage.getItem("priceId");
+
+    if (data?.success && priceId) {
+      // Realiza la solicitud POST para generar la sesión de Stripe
+      const createCheckout = async () => {
+        const response = await fetch("/api/checkout", {
+          method: "POST",
+          body: JSON.stringify({ priceId }),
+          headers: { "Content-Type": "application/json" },
+        });
+
+        if (response.ok) {
+          const { url } = await response.json();
+          localStorage.removeItem("priceId"); // Limpia el localStorage
+          router.push(url); // Redirige al checkout
+        } else {
+          console.error("Error al crear sesión de Stripe");
+          router.push("/"); // Redirige a la página de suscripción
+        }
+      };
+
+      createCheckout();
     } else if (data?.success === false) {
-      router.push("/");
+      router.push("/"); // Redirige al inicio si no está autenticado
     }
-  }, [router, user, data]);
+  }, [router, data]);
 
   if (data?.success) router.push("/dashboard");
   return (
