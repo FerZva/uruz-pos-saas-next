@@ -50,7 +50,7 @@ export async function POST(req: Request) {
             const isSubscription = item.price?.type === "recurring";
 
             if (isSubscription) {
-              let endDate = new Date();
+              const endDate = new Date();
               if (priceId === process.env.STRIPE_YEARLY_PRICE_ID!) {
                 endDate.setFullYear(endDate.getFullYear() + 1); // 1 year from now
               } else if (priceId === process.env.STRIPE_MONTHLY_PRICE_ID!) {
