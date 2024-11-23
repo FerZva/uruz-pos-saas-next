@@ -3,6 +3,7 @@ import {
   Settings,
   Shirt,
   ShoppingBag,
+  SquareUserRound,
   Store,
   Truck,
   Users,
@@ -42,12 +43,18 @@ export const navigation: Navigation[] = [
   },
   {
     linkId: 6,
+    linkIcon: SquareUserRound,
+    linkName: "Employees",
+    linkUrl: "/employees",
+  },
+  {
+    linkId: 7,
     linkIcon: Truck,
     linkName: "Providers",
     linkUrl: "/providers",
   },
   {
-    linkId: 7,
+    linkId: 8,
     linkIcon: Settings,
     linkName: "Settings",
     linkUrl: "/settings",

@@ -18,6 +18,11 @@ enum Plan {
   premium
 }
 
+enum Role {
+  manager
+  employee
+}
+
 enum subscriptionPeriod {
   monthly
   yearly
@@ -31,6 +36,8 @@ model User {
   plan           Plan          @default(free)
   customerId     String?       @unique //Stripe customer ID, this will be important when we need to delete the subscription
   Subscription   Subscription?
+  store          Store[]
+  role           Role          @default(manager)
   createdAt      DateTime      @default(now())
   uptadedAt      DateTime      @updatedAt
   subscriptionId String?
@@ -46,4 +53,75 @@ model Subscription {
   createdAt DateTime           @default(now())
   uptadedAt DateTime           @updatedAt
   User      User               @relation(fields: [userId], references: [id])
+}
+
+model Store {
+  id        String     @id @default(cuid()) @map("_id")
+  name      String
+  userId    String
+  products  Product[]
+  employees Employee[]
+  sales     Sale[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  User      User       @relation(fields: [userId], references: [id])
+}
+
+model Product {
+  id         String   @id @default(cuid()) @map("_id")
+  name       String
+  price      Float
+  quantity   Int
+  storeId    String
+  providerId String
+  Store      Store    @relation(fields: [storeId], references: [id])
+  Provider   Provider @relation(fields: [providerId], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Provider {
+  id        String    @id @default(cuid()) @map("_id")
+  name      String
+  email     String?
+  phone     String?
+  address   String?
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Employee {
+  id        String   @id @default(cuid()) @map("_id")
+  name      String
+  role      String
+  email     String
+  salary    Float
+  schedule  String // Example: "9:00 AM - 5:00 PM"
+  storeId   String
+  Store     Store    @relation(fields: [storeId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Sale {
+  id          String   @id @default(cuid()) @map("_id")
+  totalAmount Float
+  date        DateTime @default(now())
+  storeId     String
+  Store       Store    @relation(fields: [storeId], references: [id])
+  clientId    String?
+  Client      Client?  @relation(fields: [clientId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Client {
+  id        String   @id @default(cuid()) @map("_id")
+  name      String
+  email     String?
+  phone     String?
+  sales     Sale[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
