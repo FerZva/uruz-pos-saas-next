@@ -21,10 +21,10 @@ export default function HeroSection() {
             Powerful features, real-time analytics, and seamless integration.
           </p>
           <div className="flex justify-center gap-4">
-            <button className="bg-orange-500 hover:bg-orange-600">
+            <button className="bg-orange-500 flex px-2 items-center py-1 rounded-md hover:bg-orange-600">
               Get Started <ArrowRight className="ml-2 h-4 w-4" />
             </button>
-            <button className="border-orange-500 text-orange-500 hover:bg-orange-950">
+            <button className="border-orange-500 text-orange-500 hover:bg-orange-950 py-1 px-2 rounded-md">
               Watch Demo
             </button>
           </div>
