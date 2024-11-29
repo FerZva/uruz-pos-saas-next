@@ -1,9 +1,15 @@
 "use client";
+import { useFetch } from "@/app/hooks/useFetch";
 import { Provider } from "@/app/types/interfaces";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 const ProvidersPage = () => {
-  const [providers, setProviders] = useState<Provider[]>([]);
+  const {
+    data: providers,
+    loading,
+    error,
+  } = useFetch<Provider[]>("/api/providers");
+
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -12,18 +18,12 @@ const ProvidersPage = () => {
   });
   const [editingProvider, setEditingProvider] = useState<Provider | null>(null);
 
-  const fetchProviders = async () => {
-    const res = await fetch("/api/providers");
-    const data = await res.json();
-    setProviders(data);
-  };
-
   const handleCreate = async () => {
     await fetch("/api/providers", {
       method: "POST",
       body: JSON.stringify(form),
     });
-    fetchProviders();
+    window.location.reload();
     setForm({ name: "", email: "", phone: "", address: "" });
   };
 
@@ -34,19 +34,18 @@ const ProvidersPage = () => {
       method: "PATCH",
       body: JSON.stringify({ id: editingProvider.id, ...form }),
     });
-    fetchProviders();
+    window.location.reload();
     setForm({ name: "", email: "", phone: "", address: "" });
     setEditingProvider(null);
   };
 
   const handleDelete = async (id: string) => {
     await fetch(`/api/providers?id=${id}`, { method: "DELETE" });
-    fetchProviders();
+    window.location.reload();
   };
 
-  useEffect(() => {
-    fetchProviders();
-  }, []);
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   return (
     <div className="p-8">
@@ -108,7 +107,7 @@ const ProvidersPage = () => {
           </tr>
         </thead>
         <tbody>
-          {providers.map((provider) => (
+          {providers?.map((provider) => (
             <tr key={provider.id}>
               <td className="border border-gray-400 p-2">{provider.name}</td>
               <td className="border border-gray-400 p-2">{provider.email}</td>

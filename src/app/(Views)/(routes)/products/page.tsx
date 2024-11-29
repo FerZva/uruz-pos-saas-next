@@ -1,12 +1,18 @@
 "use client";
 import { Product } from "@/app/types/interfaces";
+import { useFetch } from "@/app/hooks/useFetch";
 import { LayoutGrid, List, Plus, Search } from "lucide-react";
 import { useState, useEffect } from "react";
 import ProductFormModal from "@/app/components/ProductFormModal";
 import ProductEditFormModal from "@/app/components/EditProductModal";
 
 const ProductsPage = () => {
-  const [products, setProducts] = useState<Product[]>([]);
+  const {
+    data: products,
+    loading,
+    error,
+  } = useFetch<Product[]>("/api/products");
+
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -14,20 +20,20 @@ const ProductsPage = () => {
   const [viewMode, setViewMode] = useState<"table" | "grid">("table");
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
-  const fetchProducts = async () => {
-    const res = await fetch("/api/products");
-    if (!res.ok) throw new Error("Error fetching products");
-    const data = await res.json();
-    setProducts(data);
-    setFilteredProducts(data);
-  };
+  useEffect(() => {
+    if (products) {
+      setFilteredProducts(products);
+    }
+  }, [products]);
 
   const handleSearch = (query: string) => {
     setSearch(query);
-    const filtered = products.filter((product) =>
-      product.name.toLowerCase().includes(query.toLowerCase())
-    );
-    setFilteredProducts(filtered);
+    if (products) {
+      const filtered = products.filter((product) =>
+        product.name.toLowerCase().includes(query.toLowerCase())
+      );
+      setFilteredProducts(filtered);
+    }
   };
 
   const handleSort = (option: string) => {
@@ -57,7 +63,6 @@ const ProductsPage = () => {
       },
       body: JSON.stringify(formData),
     });
-    fetchProducts();
   };
 
   const handleUpdate = async (updatedProduct: {
@@ -79,18 +84,19 @@ const ProductsPage = () => {
       },
       body: JSON.stringify(updatedProduct),
     });
-
-    fetchProducts();
   };
 
   const handleDelete = async (id: string) => {
     await fetch(`/api/products?id=${id}`, { method: "DELETE" });
-    fetchProducts();
   };
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
+  if (loading) {
+    return <div>Loading products...</div>;
+  }
+
+  if (error) {
+    return <div>Error loading products: {error}</div>;
+  }
 
   return (
     <div className="px-8 p-1">

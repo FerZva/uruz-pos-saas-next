@@ -50,5 +50,14 @@ export interface Sale {
   id: string;
   totalAmount: number;
   date: string;
-  Client?: { id: string; name: string };
+  Client?: {
+    name: string;
+  };
+  Store?: {
+    name: string;
+  };
+  saleItems: {
+    Product: { name: string };
+    quantity: number;
+  }[];
 }

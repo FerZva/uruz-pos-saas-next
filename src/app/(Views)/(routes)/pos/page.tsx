@@ -1,26 +1,26 @@
 "use client";
+import { useFetch } from "@/app/hooks/useFetch";
 import { Store } from "@/app/types/interfaces";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 const POSPage = () => {
-  const [stores, setStores] = useState<Store[]>([]);
+  const {
+    data: stores,
+    loading,
+    error,
+  } = useFetch<Store[]>("/api/stores?userId=<USER_ID>");
+
   const [form, setForm] = useState({ name: "" });
   const [editingStore, setEditingStore] = useState<Store | null>(null);
   const router = useRouter();
-
-  const fetchStores = async () => {
-    const res = await fetch("/api/stores?userId=<USER_ID>");
-    const data = await res.json();
-    setStores(data);
-  };
 
   const handleCreate = async () => {
     await fetch("/api/stores", {
       method: "POST",
       body: JSON.stringify({ ...form, userId: "<USER_ID>" }),
     });
-    fetchStores();
+    window.location.reload();
     setForm({ name: "" });
   };
 
@@ -31,19 +31,18 @@ const POSPage = () => {
       method: "PATCH",
       body: JSON.stringify({ id: editingStore.id, ...form }),
     });
-    fetchStores();
+    window.location.reload();
     setForm({ name: "" });
     setEditingStore(null);
   };
 
   const handleDelete = async (id: string) => {
     await fetch(`/api/stores?id=${id}`, { method: "DELETE" });
-    fetchStores();
+    window.location.reload();
   };
 
-  useEffect(() => {
-    fetchStores();
-  }, []);
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   return (
     <div className="p-8">
@@ -81,7 +80,7 @@ const POSPage = () => {
 
       {/* Store Cards */}
       <div className="w-full py-4 h-auto flex flex-wrap gap-x-10">
-        {stores.map((store) => (
+        {stores?.map((store) => (
           <div
             key={store.id}
             className="dark:bg-slate-800 px-2 py-4 hover:dark:bg-slate-700 cursor-pointer"

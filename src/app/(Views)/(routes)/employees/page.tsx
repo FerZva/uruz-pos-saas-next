@@ -1,9 +1,15 @@
 "use client";
+import { useFetch } from "@/app/hooks/useFetch";
 import { Employee } from "@/app/types/interfaces";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 export default function EmployeesPage() {
-  const [employees, setEmployees] = useState<Employee[]>([]);
+  const {
+    data: employees,
+    loading,
+    error,
+  } = useFetch<Employee[]>("/api/employees?storeId=<STORE_ID>");
+
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -13,18 +19,12 @@ export default function EmployeesPage() {
   });
   const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
 
-  const fetchEmployees = async () => {
-    const res = await fetch("/api/employees?storeId=<STORE_ID>");
-    const data = await res.json();
-    setEmployees(data);
-  };
-
   const handleCreate = async () => {
     await fetch("/api/employees", {
       method: "POST",
       body: JSON.stringify({ ...form, storeId: "<STORE_ID>" }),
     });
-    fetchEmployees();
+    window.location.reload(); // Recargar para actualizar la lista
     setForm({ name: "", email: "", role: "", salary: 0, schedule: "" });
   };
 
@@ -35,19 +35,18 @@ export default function EmployeesPage() {
       method: "PATCH",
       body: JSON.stringify({ id: editingEmployee.id, ...form }),
     });
-    fetchEmployees();
+    window.location.reload(); // Recargar para actualizar la lista
     setForm({ name: "", email: "", role: "", salary: 0, schedule: "" });
     setEditingEmployee(null);
   };
 
   const handleDelete = async (id: string) => {
     await fetch(`/api/employees?id=${id}`, { method: "DELETE" });
-    fetchEmployees();
+    window.location.reload(); // Recargar para actualizar la lista
   };
 
-  useEffect(() => {
-    fetchEmployees();
-  }, []);
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   return (
     <div className="p-8">
@@ -117,7 +116,7 @@ export default function EmployeesPage() {
           </tr>
         </thead>
         <tbody>
-          {employees.map((employee) => (
+          {employees?.map((employee) => (
             <tr key={employee.id}>
               <td className="border border-gray-400 p-2">{employee.name}</td>
               <td className="border border-gray-400 p-2">{employee.email}</td>

@@ -1,22 +1,17 @@
-// src/app/(views)/(routes)/clients/page.tsx
 "use client";
+
+import { useState } from "react";
+import { useFetch } from "@/app/hooks/useFetch";
 import { Client } from "@/app/types/interfaces";
-import { useEffect, useState } from "react";
 
 const ClientsPage = () => {
-  const [clients, setClients] = useState<Client[]>([]);
+  const {
+    data: clients,
+    loading,
+    error,
+  } = useFetch<Client[]>("/api/customers");
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [formData, setFormData] = useState<Client | null>(null);
-
-  const fetchClients = async () => {
-    const res = await fetch("/api/customers");
-    const data = await res.json();
-    setClients(data);
-  };
-
-  useEffect(() => {
-    fetchClients();
-  }, []);
 
   const handleSave = async () => {
     const method = formData?.id ? "PUT" : "POST";
@@ -25,24 +20,28 @@ const ClientsPage = () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),
     });
+
     if (res.ok) {
-      const updatedClients = await fetch("/api/customers").then((res) =>
-        res.json()
-      );
-      setClients(updatedClients);
       setFormData(null);
       setIsFormOpen(false);
+      location.reload(); // Recarga para obtener los datos actualizados
     }
   };
 
   const handleDelete = async (id: string) => {
-    await fetch("/api/clients", {
+    const res = await fetch("/api/customers", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id }),
     });
-    setClients((prev) => prev.filter((client) => client.id !== id));
+
+    if (res.ok) {
+      location.reload(); // Recarga para obtener los datos actualizados
+    }
   };
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   return (
     <div className="p-6">
@@ -66,7 +65,7 @@ const ClientsPage = () => {
           </tr>
         </thead>
         <tbody>
-          {clients.map((client) => (
+          {clients?.map((client) => (
             <tr key={client.id}>
               <td className="border border-gray-400 p-2">{client.name}</td>
               <td className="border border-gray-400 p-2">
