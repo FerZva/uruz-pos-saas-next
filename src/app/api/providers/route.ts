@@ -1,10 +1,20 @@
 import { NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
 // CREATE a Provider
 export async function POST(req: Request) {
   try {
     const { name, email, phone, address } = await req.json();
+    const { getUser } = getKindeServerSession();
+    const user = await getUser();
+
+    if (!user?.id) {
+      return NextResponse.json(
+        { error: "User not authenticated" },
+        { status: 401 }
+      );
+    }
 
     if (!name || !email || !phone || !address) {
       return NextResponse.json(
@@ -19,6 +29,7 @@ export async function POST(req: Request) {
         email,
         phone,
         address,
+        userId: user.id,
       },
     });
 
@@ -34,8 +45,20 @@ export async function POST(req: Request) {
 
 // GET all Providers
 export async function GET() {
+  const { getUser } = getKindeServerSession();
+  const user = await getUser();
+
+  if (!user?.id) {
+    return NextResponse.json(
+      { error: "User not authenticated" },
+      { status: 401 }
+    );
+  }
+
   try {
-    const providers = await prisma.provider.findMany();
+    const providers = await prisma.provider.findMany({
+      where: { userId: user.id },
+    });
 
     return NextResponse.json(providers);
   } catch (error) {

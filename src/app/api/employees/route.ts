@@ -1,9 +1,20 @@
 import { NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
 // CREATE an Employee
 export async function POST(request: Request) {
   try {
+    const { getUser } = getKindeServerSession();
+    const user = await getUser();
+
+    if (!user?.id) {
+      return NextResponse.json(
+        { error: "User not authenticated" },
+        { status: 401 }
+      );
+    }
+
     const { name, email, role, storeId, salary, schedule } =
       await request.json();
 
@@ -22,6 +33,7 @@ export async function POST(request: Request) {
         storeId,
         salary,
         schedule,
+        userId: user.id,
       },
     });
 
@@ -37,6 +49,16 @@ export async function POST(request: Request) {
 
 // GET all Employees for a Store
 export async function GET(request: Request) {
+  const { getUser } = getKindeServerSession();
+  const user = await getUser();
+
+  if (!user?.id) {
+    return NextResponse.json(
+      { error: "User not authenticated" },
+      { status: 401 }
+    );
+  }
+
   const { searchParams } = new URL(request.url);
   const storeId = searchParams.get("storeId");
 
@@ -49,7 +71,7 @@ export async function GET(request: Request) {
     }
 
     const employees = await prisma.employee.findMany({
-      where: { storeId },
+      where: { userId: user.id },
     });
 
     return NextResponse.json(employees);

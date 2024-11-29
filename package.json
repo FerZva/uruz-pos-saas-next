@@ -18,10 +18,13 @@
     "@tanstack/react-query": "^5.60.5",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "file-saver": "^2.0.5",
+    "file-server": "^2.2.1",
     "framer": "^2.4.1",
     "lucide-react": "^0.459.0",
     "motion": "^11.11.17",
     "next": "^15.0.3",
+    "pdf-lib": "^1.17.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "stripe": "^17.3.1",
@@ -29,6 +32,7 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
+    "@types/file-saver": "^2.0.7",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

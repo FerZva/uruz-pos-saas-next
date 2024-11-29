@@ -1,10 +1,20 @@
 import { NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
 // CREATE a Store
 export async function POST(req: Request) {
   try {
     const { name, userId } = await req.json();
+    const { getUser } = getKindeServerSession();
+    const user = await getUser();
+
+    if (!user?.id) {
+      return NextResponse.json(
+        { error: "User not authenticated" },
+        { status: 401 }
+      );
+    }
 
     if (!name || !userId) {
       return NextResponse.json(
@@ -14,7 +24,7 @@ export async function POST(req: Request) {
     }
 
     const store = await prisma.store.create({
-      data: { name, userId },
+      data: { name, userId: user.id },
     });
 
     return NextResponse.json(store, { status: 201 });
@@ -29,19 +39,19 @@ export async function POST(req: Request) {
 
 // GET all Stores for a User
 export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url);
-  const userId = searchParams.get("userId");
+  const { getUser } = getKindeServerSession();
+  const user = await getUser();
+
+  if (!user?.id) {
+    return NextResponse.json(
+      { error: "User not authenticated" },
+      { status: 401 }
+    );
+  }
 
   try {
-    if (!userId) {
-      return NextResponse.json(
-        { error: "User ID is required" },
-        { status: 400 }
-      );
-    }
-
     const stores = await prisma.store.findMany({
-      where: { userId },
+      where: { userId: user.id },
     });
 
     return NextResponse.json(stores);

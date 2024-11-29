@@ -1,17 +1,8 @@
 "use client";
-
+import { Employee } from "@/app/types/interfaces";
 import { useState, useEffect } from "react";
 
-interface Employee {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-  salary: number;
-  schedule: string;
-}
-
-const EmployeesPage = () => {
+export default function EmployeesPage() {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [form, setForm] = useState({
     name: "",
@@ -155,6 +146,4 @@ const EmployeesPage = () => {
       </table>
     </div>
   );
-};
-
-export default EmployeesPage;
+}

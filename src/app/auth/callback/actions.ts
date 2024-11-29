@@ -17,6 +17,7 @@ export async function checkAuthStatus() {
         email: user.email!,
         name: user.given_name + " " + user.family_name,
         image: user.picture as string,
+        customerId: "",
       },
     });
   }

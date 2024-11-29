@@ -2,13 +2,13 @@
 import React, { useEffect } from "react";
 import { Loader } from "lucide-react";
 import { useRouter } from "next/navigation";
-// import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
+import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 import { useQuery } from "@tanstack/react-query";
 import { checkAuthStatus } from "./actions";
 
 const CallBackPage = () => {
   const router = useRouter();
-  // const { user } = useKindeBrowserClient();
+  const { user } = useKindeBrowserClient();
   const { data } = useQuery({
     queryKey: ["checkAuthStatus"],
     queryFn: async () => checkAuthStatus(),
@@ -31,7 +31,7 @@ const CallBackPage = () => {
           localStorage.removeItem("priceId"); // Limpia el localStorage
           router.push(url); // Redirige al checkout
         } else {
-          console.error("Error al crear sesión de Stripe");
+          console.error("Error creating Stripe session");
           router.push("/"); // Redirige a la página de suscripción
         }
       };

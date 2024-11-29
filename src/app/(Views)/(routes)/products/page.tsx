@@ -1,50 +1,86 @@
 "use client";
+import { Product } from "@/app/types/interfaces";
+import { LayoutGrid, List, Plus, Search } from "lucide-react";
 import { useState, useEffect } from "react";
-
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  quantity: number;
-  providerId?: string;
-  Provider?: { name: string };
-}
+import ProductFormModal from "@/app/components/ProductFormModal";
+import ProductEditFormModal from "@/app/components/EditProductModal";
 
 const ProductsPage = () => {
   const [products, setProducts] = useState<Product[]>([]);
-  const [form, setForm] = useState({
-    name: "",
-    price: 0,
-    quantity: 0,
-    providerId: "",
-  });
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const [sortOption, setSortOption] = useState("");
+  const [viewMode, setViewMode] = useState<"table" | "grid">("table");
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
   const fetchProducts = async () => {
-    const res = await fetch("/api/products?storeId=<STORE_ID>");
+    const res = await fetch("/api/products");
+    if (!res.ok) throw new Error("Error fetching products");
     const data = await res.json();
     setProducts(data);
+    setFilteredProducts(data);
   };
 
-  const handleCreate = async () => {
+  const handleSearch = (query: string) => {
+    setSearch(query);
+    const filtered = products.filter((product) =>
+      product.name.toLowerCase().includes(query.toLowerCase())
+    );
+    setFilteredProducts(filtered);
+  };
+
+  const handleSort = (option: string) => {
+    setSortOption(option);
+    const sorted = [...filteredProducts].sort((a, b) => {
+      if (option === "alphabetical") return a.name.localeCompare(b.name);
+      if (option === "price") return a.price - b.price;
+      if (option === "stock") return a.quantity - b.quantity;
+      if (option === "provider")
+        return (a.Provider?.name || "").localeCompare(b.Provider?.name || "");
+      return 0;
+    });
+    setFilteredProducts(sorted);
+  };
+
+  const handleCreate = async (formData: {
+    name: string;
+    price: number;
+    quantity: number;
+    providerId: string;
+    storeId: string;
+  }) => {
     await fetch("/api/products", {
       method: "POST",
-      body: JSON.stringify({ ...form, storeId: "<STORE_ID>" }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
     });
     fetchProducts();
-    setForm({ name: "", price: 0, quantity: 0, providerId: "" });
   };
 
-  const handleUpdate = async () => {
-    if (!editingProduct) return;
+  const handleUpdate = async (updatedProduct: {
+    id: string;
+    name: string;
+    price: number;
+    quantity: number;
+    providerId?: string;
+  }) => {
+    if (!updatedProduct || !updatedProduct.id) {
+      console.error("Invalid product data", updatedProduct);
+      return;
+    }
 
     await fetch("/api/products", {
       method: "PATCH",
-      body: JSON.stringify({ id: editingProduct.id, ...form }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(updatedProduct),
     });
+
     fetchProducts();
-    setForm({ name: "", price: 0, quantity: 0, providerId: "" });
-    setEditingProduct(null);
   };
 
   const handleDelete = async (id: string) => {
@@ -57,95 +93,150 @@ const ProductsPage = () => {
   }, []);
 
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold mb-4">Products</h1>
-
-      {/* Form */}
-      <div className="mb-4">
-        <input
-          type="text"
-          placeholder="Name"
-          value={form.name}
-          onChange={(e) => setForm({ ...form, name: e.target.value })}
-          className="border p-2 mr-2"
-        />
-        <input
-          type="number"
-          placeholder="Price"
-          value={form.price}
-          onChange={(e) =>
-            setForm({ ...form, price: parseFloat(e.target.value) })
-          }
-          className="border p-2 mr-2"
-        />
-        <input
-          type="number"
-          placeholder="Quantity"
-          value={form.quantity}
-          onChange={(e) =>
-            setForm({ ...form, quantity: parseInt(e.target.value) })
-          }
-          className="border p-2 mr-2"
-        />
-        <input
-          type="text"
-          placeholder="Provider ID"
-          value={form.providerId}
-          onChange={(e) => setForm({ ...form, providerId: e.target.value })}
-          className="border p-2 mr-2"
-        />
-        {editingProduct ? (
-          <button onClick={handleUpdate} className="bg-blue-500 text-white p-2">
-            Update
-          </button>
-        ) : (
-          <button
-            onClick={handleCreate}
-            className="bg-green-500 text-white p-2"
+    <div className="px-8 p-1">
+      {/* Filters */}
+      <div className="flex justify-between items-center gap-4 mb-4">
+        <div className="flex items-center w-auto">
+          <Search className="mr-2" />
+          <input
+            type="text"
+            placeholder="Search products by name or keyboard..."
+            value={search}
+            onChange={(e) => handleSearch(e.target.value)}
+            className="border p-2 min-w-[300px] w-auto border-none outline-none dark:bg-slate-900"
+          />
+        </div>
+        <div className="flex items-center">
+          <select
+            value={sortOption}
+            onChange={(e) => handleSort(e.target.value)}
+            className=" py-2 mr-2 w-auto outline-none dark:bg-slate-900 text-center hover:cursor-pointer"
           >
-            Create
-          </button>
-        )}
+            <option value="">Filters</option>
+            <option value="alphabetical">Alphabetical</option>
+            <option value="price">Price</option>
+            <option value="stock">Stock</option>
+            <option value="provider">Provider</option>
+          </select>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setViewMode("table")}
+              className={`p-2 ${
+                viewMode === "table"
+                  ? "bg-slate-200 rounded-md text-black dark:dark:bg-slate-800 dark:text-white"
+                  : ""
+              }`}
+            >
+              <List />
+            </button>
+            <button
+              onClick={() => setViewMode("grid")}
+              className={`p-2 ${
+                viewMode === "grid"
+                  ? "bg-slate-200 rounded-md text-black dark:dark:bg-slate-800 dark:text-white"
+                  : ""
+              }`}
+            >
+              <LayoutGrid />
+            </button>
+            <button onClick={() => setIsModalOpen(true)}>
+              <Plus />
+            </button>
+          </div>
+        </div>
       </div>
 
+      {/* Create Product */}
+      <ProductFormModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSubmit={handleCreate}
+      />
+
+      <ProductEditFormModal
+        isOpen={!!editingProduct}
+        product={editingProduct}
+        onClose={() => setEditingProduct(null)}
+        onSubmit={async (updatedProduct) => {
+          await handleUpdate(updatedProduct);
+          setEditingProduct(null);
+        }}
+      />
+
       {/* Product List */}
-      <table className="table-auto w-full border-collapse border border-gray-400">
-        <thead>
-          <tr>
-            <th className="border border-gray-400 p-2">Name</th>
-            <th className="border border-gray-400 p-2">Price</th>
-            <th className="border border-gray-400 p-2">Quantity</th>
-            <th className="border border-gray-400 p-2">Provider</th>
-            <th className="border border-gray-400 p-2">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {products.map((product) => (
-            <tr key={product.id}>
-              <td className="border border-gray-400 p-2">{product.name}</td>
-              <td className="border border-gray-400 p-2">${product.price}</td>
-              <td className="border border-gray-400 p-2">{product.quantity}</td>
-              <td className="border border-gray-400 p-2">
-                {product.Provider?.name || "N/A"}
-              </td>
-              <td className="border border-gray-400 p-2">
+      {viewMode === "table" ? (
+        <table className="table-auto w-full">
+          <thead>
+            <tr className="bg-slate-200 dark:bg-slate-800 text-left">
+              <th className="p-2">Name</th>
+              <th className="p-2">Price</th>
+              <th className="p-2">Quantity</th>
+              <th className="p-2">Provider</th>
+              <th className="p-2">Store</th>
+              <th className="p-2">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredProducts.map((product) => (
+              <tr
+                key={product.id}
+                className="hover:bg-slate-200 dark:hover:bg-slate-800"
+              >
+                <td className=" p-2">{product.name}</td>
+                <td className=" p-2">${product.price}</td>
+                <td className=" p-2">{product.quantity}</td>
+                <td className=" p-2">{product.Provider?.name || "N/A"}</td>
+                <td className=" p-2">
+                  {product.Store?.name || "Unknown Store"}
+                </td>
+                <td className=" p-2">
+                  <button
+                    onClick={() => setEditingProduct(product)}
+                    className="bg-blue-500 rounded-md px-2 text-white p-1 mr-2"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(product.id)}
+                    className="bg-red-500 rounded-md px-2 text-white p-1"
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <div className="grid grid-cols-4 gap-4">
+          {filteredProducts.map((product) => (
+            <div
+              key={product.id}
+              className="border p-4 flex flex-col items-start bg-slate-200 dark:bg-slate-800"
+            >
+              <h2 className="text-lg font-bold">{product.name}</h2>
+              <p>Price: ${product.price}</p>
+              <p>Quantity: {product.quantity}</p>
+              <p>Provider: {product.Provider?.name || "N/A"}</p>
+              <p>Store: {product.Store?.name || "Unknown Store"}</p>
+              <div className="mt-2 flex gap-2">
                 <button
                   onClick={() => setEditingProduct(product)}
-                  className="bg-yellow-500 text-white p-1 mr-2"
+                  className="bg-blue-500 rounded-md px-2 text-white p-1"
                 >
                   Edit
                 </button>
                 <button
                   onClick={() => handleDelete(product.id)}
-                  className="bg-red-500 text-white p-1"
+                  className="bg-red-500 rounded-md px-2 text-white p-1"
                 >
                   Delete
                 </button>
-              </td>
-            </tr>
+              </div>
+            </div>
           ))}
-        </tbody>
-      </table>
+        </div>
+      )}
     </div>
   );
 };

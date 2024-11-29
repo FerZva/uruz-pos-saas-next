@@ -1,12 +1,23 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
 export async function POST(request: Request) {
   try {
+    const { getUser } = getKindeServerSession();
+    const user = await getUser();
+
+    if (!user?.id) {
+      return NextResponse.json(
+        { error: "User not authenticated" },
+        { status: 401 }
+      );
+    }
+
     const { name, price, quantity, storeId, providerId } = await request.json();
 
     const product = await prisma.product.create({
-      data: { name, price, quantity, storeId, providerId },
+      data: { name, price, quantity, storeId, providerId, userId: user.id },
     });
 
     return NextResponse.json(product, { status: 201 });
@@ -20,19 +31,20 @@ export async function POST(request: Request) {
 }
 
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const storeId = searchParams.get("storeId");
+  const { getUser } = getKindeServerSession();
+  const user = await getUser();
+
+  if (!user?.id) {
+    return NextResponse.json(
+      { error: "User not authenticated" },
+      { status: 401 }
+    );
+  }
 
   try {
-    if (!storeId)
-      return NextResponse.json(
-        { error: "Store ID is required" },
-        { status: 400 }
-      );
-
     const products = await prisma.product.findMany({
-      where: { storeId },
-      include: { Provider: true },
+      where: { userId: user.id },
+      include: { Provider: true, Store: true },
     });
 
     return NextResponse.json(products);
@@ -45,18 +57,26 @@ export async function GET(request: Request) {
   }
 }
 
-export async function PATCH(request: Request) {
+export async function PATCH(req: NextRequest) {
   try {
-    const { id, name, price, quantity, providerId } = await request.json();
+    const body = await req.json();
+    const { id, name, price, quantity, providerId } = body;
+
+    if (!id || !name || !price || !quantity || !providerId) {
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      );
+    }
 
     const updatedProduct = await prisma.product.update({
       where: { id },
-      data: { name, price, quantity, providerId },
+      data: { name, price: parseFloat(price), quantity, providerId },
     });
 
     return NextResponse.json(updatedProduct);
   } catch (error) {
-    console.error(error);
+    console.error("Error updating product:", error);
     return NextResponse.json(
       { error: "Failed to update product" },
       { status: 500 }

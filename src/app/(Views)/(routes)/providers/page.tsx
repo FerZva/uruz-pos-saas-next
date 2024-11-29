@@ -1,13 +1,6 @@
 "use client";
+import { Provider } from "@/app/types/interfaces";
 import { useState, useEffect } from "react";
-
-interface Provider {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  address: string;
-}
 
 const ProvidersPage = () => {
   const [providers, setProviders] = useState<Provider[]>([]);

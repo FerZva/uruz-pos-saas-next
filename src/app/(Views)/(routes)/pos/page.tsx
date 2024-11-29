@@ -1,15 +1,13 @@
 "use client";
+import { Store } from "@/app/types/interfaces";
 import { useState, useEffect } from "react";
-
-interface Store {
-  id: string;
-  name: string;
-}
+import { useRouter } from "next/navigation";
 
 const POSPage = () => {
   const [stores, setStores] = useState<Store[]>([]);
   const [form, setForm] = useState({ name: "" });
   const [editingStore, setEditingStore] = useState<Store | null>(null);
+  const router = useRouter();
 
   const fetchStores = async () => {
     const res = await fetch("/api/stores?userId=<USER_ID>");
@@ -81,37 +79,38 @@ const POSPage = () => {
         )}
       </div>
 
-      {/* Store List */}
-      <table className="table-auto w-full border-collapse border border-gray-400">
-        <thead>
-          <tr>
-            <th className="border border-gray-400 p-2">Name</th>
-            <th className="border border-gray-400 p-2">Location</th>
-            <th className="border border-gray-400 p-2">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {stores.map((store) => (
-            <tr key={store.id}>
-              <td className="border border-gray-400 p-2">{store.name}</td>
-              <td className="border border-gray-400 p-2">
-                <button
-                  onClick={() => setEditingStore(store)}
-                  className="bg-yellow-500 text-white p-1 mr-2"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(store.id)}
-                  className="bg-red-500 text-white p-1"
-                >
-                  Delete
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {/* Store Cards */}
+      <div className="w-full py-4 h-auto flex flex-wrap gap-x-10">
+        {stores.map((store) => (
+          <div
+            key={store.id}
+            className="dark:bg-slate-800 px-2 py-4 hover:dark:bg-slate-700 cursor-pointer"
+            onClick={() => router.push(`/pos/stores/${store.id}`)}
+          >
+            <h3>{store.name}</h3>
+            <p>Status: Open</p>
+            <p>Employees: 5</p>
+            <p>Locations: New York 42 Stree, MH 56432</p>
+            <div className="flex">
+              <button
+                onClick={() => setEditingStore(store)}
+                className="bg-yellow-500 text-white p-1 mr-2"
+              >
+                Edit
+              </button>
+              <button
+                onClick={() => handleDelete(store.id)}
+                className="bg-red-500 text-white p-1"
+              >
+                Delete
+              </button>
+              <button className="bg-blue-500 text-white p-1 ml-2">
+                Place sell
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
