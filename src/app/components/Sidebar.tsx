@@ -9,7 +9,7 @@ interface SidebarProps {
   toggleMenu: () => void;
 }
 
-const Siderbar: React.FC<SidebarProps> = ({ menu, toggleMenu }) => {
+const Siderbar: React.FC<SidebarProps> = ({ menu }) => {
   return (
     <div
       className={`w-full ${

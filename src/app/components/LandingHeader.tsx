@@ -4,8 +4,8 @@ import { LogOut, Menu, X } from "lucide-react";
 import Link from "next/link";
 import React, { useState } from "react";
 import Image from "next/image";
-import { useQuery } from "@tanstack/react-query";
-import { isUserSubscribed } from "../(Views)/actions";
+// import { useQuery } from "@tanstack/react-query";
+// import { isUserSubscribed } from "../(Views)/actions";
 
 const LandingHeader = () => {
   const [menu, setMenu] = useState(false);
@@ -15,11 +15,11 @@ const LandingHeader = () => {
 
   // const isSubscribed = true;
   const { isAuthenticated } = useKindeBrowserClient();
-  const { data } = useQuery({
-    queryKey: ["isUserSubscribed"],
-    queryFn: async () => isUserSubscribed(),
-  });
-  const isSubscribed = data?.subscribed;
+  // const { data } = useQuery({
+  //   queryKey: ["isUserSubscribed"],
+  //   queryFn: async () => isUserSubscribed(),
+  // });
+  // const isSubscribed = data?.subscribed;
   return (
     <>
       <header className="hidden md:flex justify-between bg-black py-1 px-2">

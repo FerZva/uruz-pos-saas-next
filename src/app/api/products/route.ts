@@ -30,7 +30,7 @@ export async function POST(request: Request) {
   }
 }
 
-export async function GET(request: Request) {
+export async function GET() {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 

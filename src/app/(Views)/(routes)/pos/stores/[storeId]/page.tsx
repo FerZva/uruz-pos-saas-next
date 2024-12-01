@@ -117,7 +117,7 @@ const StoreProductsPage = () => {
         const client = clients.find((c) => c.id === selectedClient);
         const pdfDoc = await PDFDocument.create();
         const page = pdfDoc.addPage([600, 400]);
-        const { width, height } = page.getSize();
+        const { height } = page.getSize();
 
         page.drawText("Invoice", {
           x: 50,

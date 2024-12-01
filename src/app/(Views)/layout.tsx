@@ -1,9 +1,9 @@
 "use client";
-import React, { useState } from "react";
+import { useState } from "react";
 import Header from "../components/Header";
 import Sidebar from "@/app/components/Sidebar";
 
-const layout = ({ children }: { children: React.ReactNode }) => {
+const Layout = ({ children }: { children: React.ReactNode }) => {
   const [menu, setMenu] = useState(false);
 
   const toggleMenu = () => setMenu(!menu);
@@ -18,4 +18,4 @@ const layout = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-export default layout;
+export default Layout;

@@ -1,7 +1,7 @@
 "use client";
 import { useFetch } from "@/app/hooks/useFetch";
 import { Store } from "@/app/types/interfaces";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 const POSPage = () => {

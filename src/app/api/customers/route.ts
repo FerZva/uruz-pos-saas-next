@@ -18,7 +18,7 @@ export async function GET() {
       where: { userId: user.id },
     });
     return NextResponse.json(clients);
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: "Failed to fetch clients" },
       { status: 500 }
@@ -43,7 +43,7 @@ export async function POST(req: Request) {
       data: { name, email, phone, userId: user.id },
     });
     return NextResponse.json(newClient);
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: "Failed to create client" },
       { status: 500 }
@@ -59,7 +59,7 @@ export async function PUT(req: Request) {
       data: { name, email, phone },
     });
     return NextResponse.json(updatedClient);
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: "Failed to update client" },
       { status: 500 }
@@ -72,7 +72,7 @@ export async function DELETE(req: Request) {
     const { id } = await req.json();
     await prisma.client.delete({ where: { id } });
     return NextResponse.json({ message: "Client deleted successfully" });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: "Failed to delete client" },
       { status: 500 }

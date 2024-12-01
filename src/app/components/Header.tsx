@@ -1,10 +1,18 @@
 "use client";
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
-import { LogOut, Menu } from "lucide-react";
-import Link from "next/link";
+import { Menu } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 import { usePathname } from "next/navigation";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import ThemeSwitcher from "./ThemeSwitcher";
 
 interface HeaderProps {
@@ -35,26 +43,48 @@ const Header: React.FC<HeaderProps> = ({ toggleMenu }) => {
         <h1 className="text-2xl font-bold ml-4">{pageName}</h1>
       </div>
       {/* <UserButton /> */}
-      <div className="flex">
-        <ThemeSwitcher />
+      <div className="flex items-center">
         {user && (
-          <Link
-            href="/api/auth/logout"
-            className="flex items-center bg-slate-900 p-2 rounded-md text-white ml-2"
-          >
-            Logout
-            <LogOut className="w-4 h-4 ml-2" />
-          </Link>
-        )}
-
-        {user && (
-          <Image
-            src={user.picture || ""}
-            width={40}
-            height={40}
-            alt="User Profile"
-            className="rounded-full"
-          />
+          <div className="flex items-center">
+            <ThemeSwitcher />
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="relative h-10 w-10 rounded-full ml-4">
+                  <Image
+                    src={user.picture || ""}
+                    width={40}
+                    height={40}
+                    alt={user.given_name ?? "User"}
+                    className="rounded-full w-full"
+                  />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56" align="end" forceMount>
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium leading-none">
+                      {user.given_name}
+                    </p>
+                    <p className="text-xs leading-none text-muted-foreground">
+                      {user.email}
+                    </p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="cursor-pointer">
+                  Profile
+                </DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer">
+                  Settings
+                </DropdownMenuItem>
+                <Link href="/api/auth/logout">
+                  <DropdownMenuItem className="cursor-pointer">
+                    Log out
+                  </DropdownMenuItem>
+                </Link>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         )}
 
         {!user && (

@@ -38,7 +38,7 @@ export async function POST(req: Request) {
 }
 
 // GET all Stores for a User
-export async function GET(req: Request) {
+export async function GET() {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 

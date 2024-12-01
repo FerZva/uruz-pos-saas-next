@@ -28,7 +28,7 @@ export function useFetch<T = unknown>(url: string): UseFetchReturn<T> {
         return response.json();
       })
       .then((json: T) => setData(json))
-      .catch((error: any) => {
+      .catch((error) => {
         if (error.name === "AbortError") {
           console.log("Cancelled request");
         } else {

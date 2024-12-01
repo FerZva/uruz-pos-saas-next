@@ -1,21 +1,21 @@
 import React from "react";
-import ButtonCheckout from "@/app/components/ButtonCheckout";
-import Stripe from "stripe";
-import Image from "next/image";
+// import ButtonCheckout from "@/app/components/ButtonCheckout";
+// import Stripe from "stripe";
+// import Image from "next/image";
 import Hero from "../components/Hero";
 import Features from "../components/Features";
 import Testimonials from "../components/Testimonials";
 import Stats from "../components/Stats";
 import Pricing from "../components/Pricing";
 
-async function loadPrices() {
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-  const prices = await stripe.prices.list();
-  return prices.data;
-}
+// async function loadPrices() {
+//   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+//   const prices = await stripe.prices.list();
+//   return prices.data;
+// }
 
 const LandingPage = async () => {
-  const prices = await loadPrices();
+  // const prices = await loadPrices();
   return (
     <main className=" flex flex-col justify-center">
       <Hero />

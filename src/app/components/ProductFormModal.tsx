@@ -12,6 +12,15 @@ interface ProductFormModalProps {
     storeId: string;
   }) => void;
 }
+interface Provider {
+  id: string;
+  name: string;
+}
+
+interface Store {
+  id: string;
+  name: string;
+}
 
 const ProductFormModal: React.FC<ProductFormModalProps> = ({
   isOpen,
@@ -26,8 +35,8 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
     storeId: "",
   });
 
-  const [providers, setProviders] = useState([]);
-  const [stores, setStores] = useState([]);
+  const [providers, setProviders] = useState<Provider[]>([]);
+  const [stores, setStores] = useState<Store[]>([]);
 
   useEffect(() => {
     const fetchProviders = async () => {
@@ -90,7 +99,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
             className="p-2 w-full mb-2 dark:bg-slate-800"
           >
             <option value="">Select Provider</option>
-            {providers.map((provider: any) => (
+            {providers.map((provider) => (
               <option key={provider.id} value={provider.id}>
                 {provider.name}
               </option>
@@ -102,7 +111,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
             className="p-2 w-full mb-2 dark:bg-slate-800"
           >
             <option value="">Select Store</option>
-            {stores.map((store: any) => (
+            {stores.map((store) => (
               <option key={store.id} value={store.id}>
                 {store.name}
               </option>
