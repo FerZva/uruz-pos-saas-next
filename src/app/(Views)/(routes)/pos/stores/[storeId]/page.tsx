@@ -1,16 +1,9 @@
 "use client";
-import { Product } from "@/app/types/interfaces";
+import { Product, Client } from "@/app/types/interfaces";
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { PDFDocument, rgb } from "pdf-lib";
 import { saveAs } from "file-saver";
-
-interface Client {
-  id: string;
-  name: string;
-  email?: string;
-  phone?: string;
-}
 
 const StoreProductsPage = () => {
   const { storeId } = useParams();
@@ -22,9 +15,12 @@ const StoreProductsPage = () => {
   }>({});
   const [clients, setClients] = useState<Client[]>([]);
   const [selectedClient, setSelectedClient] = useState<string | null>(null);
+  const [printFormat, setPrintFormat] = useState<"thermal" | "letter">(
+    "thermal"
+  );
 
   const fetchProducts = async () => {
-    const res = await fetch(`/api/products?storeId=${storeId}`);
+    const res = await fetch(`/api/storeProducts?storeId=${storeId}`);
     const data = await res.json();
     setProducts(data);
     setFilteredProducts(data);
@@ -114,47 +110,9 @@ const StoreProductsPage = () => {
         alert("Sale registered successfully!");
 
         // Generate PDF invoice
-        const client = clients.find((c) => c.id === selectedClient);
-        const pdfDoc = await PDFDocument.create();
-        const page = pdfDoc.addPage([600, 400]);
-        const { height } = page.getSize();
-
-        page.drawText("Invoice", {
-          x: 50,
-          y: height - 50,
-          size: 24,
-          color: rgb(0, 0, 0),
-        });
-
-        page.drawText(`Client: ${client?.name || "Unknown"}`, {
-          x: 50,
-          y: height - 100,
-          size: 12,
-          color: rgb(0, 0, 0),
-        });
-
-        let yPosition = height - 150;
-        Object.values(cart).forEach(({ product, quantity }) => {
-          page.drawText(
-            `${product.name} - $${product.price} x ${quantity} = $${(
-              product.price * quantity
-            ).toFixed(2)}`,
-            { x: 50, y: yPosition, size: 12, color: rgb(0, 0, 0) }
-          );
-          yPosition -= 20;
-        });
-
-        page.drawText(`Total: $${calculateTotal().toFixed(2)}`, {
-          x: 50,
-          y: yPosition - 20,
-          size: 16,
-          color: rgb(0, 0, 0),
-        });
-
-        const pdfBytes = await pdfDoc.save();
+        const pdfBytes = await generateReceiptPDF();
         const blob = new Blob([pdfBytes], { type: "application/pdf" });
         saveAs(blob, "invoice.pdf");
-
         setCart({});
         fetchProducts(); // Refresh product stock
       } else {
@@ -167,6 +125,68 @@ const StoreProductsPage = () => {
     }
   };
 
+  const generateReceiptPDF = async () => {
+    const client = clients.find((c) => c.id === selectedClient);
+    const pdfDoc = await PDFDocument.create();
+    const page =
+      printFormat === "thermal"
+        ? pdfDoc.addPage([227.7, 315]) // Thermal format
+        : pdfDoc.addPage([612, 792]); // Letter format
+
+    const { height } = page.getSize();
+
+    page.drawText("Invoice", {
+      x: 20,
+      y: height - 30,
+      size: 18,
+      color: rgb(0, 0, 0),
+    });
+
+    page.drawText(`Client: ${client?.name || "Unknown"}`, {
+      x: 20,
+      y: height - 50,
+      size: 12,
+      color: rgb(0, 0, 0),
+    });
+
+    let yPosition = height - 100;
+    Object.values(cart).forEach(({ product, quantity }) => {
+      page.drawText(
+        `${product.name} - $${product.price} x ${quantity} = $${(
+          product.price * quantity
+        ).toFixed(2)}`,
+        { x: 20, y: yPosition, size: 10, color: rgb(0, 0, 0) }
+      );
+      yPosition -= 20;
+    });
+
+    page.drawText(`Total: $${calculateTotal().toFixed(2)}`, {
+      x: 20,
+      y: yPosition - 20,
+      size: 14,
+      color: rgb(0, 0, 0),
+    });
+
+    const pdfBytes = await pdfDoc.save();
+    return pdfBytes;
+  };
+
+  const handlePreviewReceipt = async () => {
+    if (!selectedClient) {
+      alert("Please select a client before previewing the receipt.");
+      return;
+    }
+
+    try {
+      const pdfBytes = await generateReceiptPDF();
+      const blob = new Blob([pdfBytes], { type: "application/pdf" });
+      const url = URL.createObjectURL(blob);
+      window.open(url, "_blank");
+    } catch (error) {
+      console.error("Error generating preview:", error);
+    }
+  };
+
   useEffect(() => {
     fetchProducts();
     fetchClients();
@@ -175,6 +195,19 @@ const StoreProductsPage = () => {
   return (
     <div className="p-8">
       <h1 className="text-2xl font-bold mb-4">Products for Store {storeId}</h1>
+      <div className="mb-4">
+        <label className="block mb-2 font-semibold">Select Print Format:</label>
+        <select
+          value={printFormat}
+          onChange={(e) =>
+            setPrintFormat(e.target.value as "thermal" | "letter")
+          }
+          className="p-2 border rounded shadow-md"
+        >
+          <option value="thermal">Thermal (80x70mm)</option>
+          <option value="letter">Letter (8.5x11 inches)</option>
+        </select>
+      </div>
 
       {/* Search Bar */}
       <div className="mb-6">
@@ -279,6 +312,13 @@ const StoreProductsPage = () => {
       </div>
 
       {/* Register Sale Button */}
+      <button
+        onClick={handlePreviewReceipt}
+        className="bg-gray-500 text-white p-4 rounded"
+        disabled={Object.keys(cart).length === 0 || !selectedClient}
+      >
+        Preview Receipt
+      </button>
       <button
         onClick={handleRegisterSale}
         className="bg-blue-500 text-white p-4 mt-6 rounded"

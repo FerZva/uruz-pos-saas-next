@@ -5,7 +5,7 @@ import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 // CREATE a Store
 export async function POST(req: Request) {
   try {
-    const { name, userId } = await req.json();
+    const { name, cashOpening, status, location } = await req.json();
     const { getUser } = getKindeServerSession();
     const user = await getUser();
 
@@ -16,7 +16,7 @@ export async function POST(req: Request) {
       );
     }
 
-    if (!name || !userId) {
+    if (!name || !location || cashOpening == null || !status) {
       return NextResponse.json(
         { error: "All fields are required" },
         { status: 400 }
@@ -24,7 +24,13 @@ export async function POST(req: Request) {
     }
 
     const store = await prisma.store.create({
-      data: { name, userId: user.id },
+      data: {
+        name,
+        userId: user.id,
+        cashOpening,
+        status,
+        location,
+      },
     });
 
     return NextResponse.json(store, { status: 201 });
@@ -67,9 +73,9 @@ export async function GET() {
 // UPDATE a Store
 export async function PATCH(req: Request) {
   try {
-    const { id, name } = await req.json();
+    const { id, name, cashOpening, status, location } = await req.json();
 
-    if (!id || !name) {
+    if (!id || !name || cashOpening == null || !status || !location) {
       return NextResponse.json(
         { error: "All fields are required" },
         { status: 400 }
@@ -78,7 +84,7 @@ export async function PATCH(req: Request) {
 
     const updatedStore = await prisma.store.update({
       where: { id },
-      data: { name },
+      data: { name, cashOpening, status, location },
     });
 
     return NextResponse.json(updatedStore);

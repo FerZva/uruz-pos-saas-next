@@ -34,6 +34,9 @@ export interface Employee {
 export interface Store {
   id: string;
   name: string;
+  cashOpening: string;
+  location: string;
+  status: string;
 }
 
 export interface Product {

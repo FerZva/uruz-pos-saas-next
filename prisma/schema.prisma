@@ -61,15 +61,31 @@ model Subscription {
 }
 
 model Store {
-  id        String     @id @default(cuid()) @map("_id")
-  name      String
-  userId    String
-  products  Product[]
-  employees Employee[]
-  sales     Sale[]
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  User      User       @relation(fields: [userId], references: [id])
+  id          String             @id @default(cuid()) @map("_id")
+  name        String
+  userId      String
+  products    Product[]
+  employees   Employee[]
+  sales       Sale[]
+  history     StoreTransaction[]
+  cashOpening Float              @default(0.0) // Valor inicial en caja
+  status      String             @default("closed") // Estado de la tienda
+  location    String // Ubicación de la tienda
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  User        User               @relation(fields: [userId], references: [id])
+}
+
+model StoreTransaction {
+  id          String   @id @default(cuid()) @map("_id")
+  storeId     String
+  type        String // "open" o "close"
+  timestamp   DateTime @default(now())
+  cashOpening Float // Monto de caja inicial para apertura
+  cashClosing Float? // Monto de caja final para cierre
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  Store       Store    @relation(fields: [storeId], references: [id])
 }
 
 model Product {

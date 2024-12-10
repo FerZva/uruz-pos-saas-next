@@ -26,8 +26,15 @@ export async function POST(req: Request) {
       },
     });
 
-    // Update product stock and log items
     for (const { productId, quantity } of products) {
+      await prisma.saleItem.create({
+        data: {
+          saleId: sale.id,
+          productId,
+          quantity,
+        },
+      });
+
       await prisma.product.update({
         where: { id: productId },
         data: {
@@ -35,6 +42,8 @@ export async function POST(req: Request) {
         },
       });
     }
+
+    // Update product stock and log items
 
     return NextResponse.json(sale);
   } catch (error) {

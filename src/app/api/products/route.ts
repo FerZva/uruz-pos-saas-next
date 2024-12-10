@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "@/app/lib/prisma";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
@@ -30,7 +31,10 @@ export async function POST(request: Request) {
   }
 }
 
-export async function GET() {
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const storeId = searchParams.get("storeId");
+
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 
@@ -44,7 +48,7 @@ export async function GET() {
   try {
     const products = await prisma.product.findMany({
       where: { userId: user.id },
-      include: { Provider: true, Store: true },
+      include: { Provider: true, Store: { select: { name: true } } },
     });
 
     return NextResponse.json(products);
