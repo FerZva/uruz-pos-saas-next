@@ -1,72 +1,65 @@
 "use client";
-
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
-export default function HeroSection() {
+export function HeroSection() {
   return (
-    <section className=" relative overflow-hidden bg-black py-20 md:py-32">
-      <div className="m-auto container relative z-10">
+    <section className="relative overflow-hidden py-20 md:py-32">
+      <div className="container relative z-10 m-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
           className="text-center"
         >
-          <h1 className="mb-6 bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-4xl font-bold text-transparent sm:text-5xl md:text-6xl lg:text-7xl">
-            Next Generation URUZ POS System
+          <h1 className="mb-6 bg-gradient-to-r from-blue-300 via-blue-500 to-blue-300 bg-clip-text text-4xl font-extrabold text-transparent sm:text-5xl md:text-6xl lg:text-7xl">
+            Elevate Your Business with URUZ POS System
           </h1>
-          <p className="mx-auto mb-8 max-w-2xl text-lg text-gray-400">
-            Transform your business with our advanced point of sale solution.
-            Powerful features, real-time analytics, and seamless integration.
+          <p className="mx-auto mb-8 max-w-2xl text-lg text-gray-300">
+            Experience the future of point-of-sale systems. Seamless
+            transactions, powerful analytics, and unparalleled efficiency all in
+            one elegant solution.
           </p>
           <div className="flex justify-center gap-4">
-            <button className="bg-orange-500 flex px-2 items-center py-1 rounded-md hover:bg-orange-600">
+            <Button
+              size="lg"
+              className="bg-gradient-to-r from-blue-500 to-blue-600 text-white transition-all duration-300 hover:from-blue-600 hover:to-blue-700"
+            >
               Get Started <ArrowRight className="ml-2 h-4 w-4" />
-            </button>
-            <button className="border-orange-500 text-orange-500 hover:bg-orange-950 py-1 px-2 rounded-md">
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              className="border-blue-500 text-blue-400 transition-all duration-300 hover:bg-blue-950 hover:text-blue-300"
+            >
               Watch Demo
-            </button>
+            </Button>
           </div>
         </motion.div>
 
         <motion.div
           initial={{ opacity: 0, y: 100 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
+          transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
           className="mt-16"
         >
-          <div className="relative mx-auto aspect-video max-w-4xl overflow-hidden rounded-xl bg-gradient-to-br from-orange-500/10 to-amber-500/10 p-1">
-            <div className="h-full w-full rounded-lg bg-gray-900/90 p-4">
-              <div className="flex gap-2">
-                <div className="h-3 w-3 rounded-full bg-red-500" />
-                <div className="h-3 w-3 rounded-full bg-yellow-500" />
-                <div className="h-3 w-3 rounded-full bg-green-500" />
-              </div>
-              <div className="mt-4 grid grid-cols-12 gap-4">
-                <div className="col-span-3 space-y-4">
-                  <div className="h-8 rounded bg-gray-800" />
-                  <div className="h-8 rounded bg-gray-800" />
-                  <div className="h-8 rounded bg-gray-800" />
-                  <div className="h-8 rounded bg-gray-800" />
-                </div>
-                <div className="col-span-9 rounded-lg bg-gray-800 p-4">
-                  <div className="grid grid-cols-3 gap-4">
-                    {[...Array(6)].map((_, i) => (
-                      <div
-                        key={i}
-                        className="aspect-square rounded-lg bg-gray-700"
-                      />
-                    ))}
-                  </div>
-                </div>
-              </div>
+          <div className="relative mx-auto aspect-video max-w-4xl overflow-hidden rounded-xl bg-gradient-to-br from-blue-500/20 to-blue-600/20 p-1 shadow-2xl">
+            <div className="h-full w-full rounded-lg bg-gray-900/90 p-4 backdrop-blur-sm">
+              <Image
+                alt="URUZ Point of sale system photo preview"
+                src="/preview.png"
+                className="w-full"
+                width={1000}
+                height={1500}
+              />
             </div>
           </div>
         </motion.div>
       </div>
 
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(255,139,0,0.1),transparent_50%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(59,130,246,0.1),transparent_70%)]" />
     </section>
   );
 }

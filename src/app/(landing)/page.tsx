@@ -2,7 +2,7 @@ import React from "react";
 // import ButtonCheckout from "@/app/components/ButtonCheckout";
 // import Stripe from "stripe";
 // import Image from "next/image";
-import Hero from "../components/Hero";
+import { HeroSection } from "../components/Hero";
 import Features from "../components/Features";
 import Testimonials from "../components/Testimonials";
 import Stats from "../components/Stats";
@@ -18,7 +18,7 @@ const LandingPage = async () => {
   // const prices = await loadPrices();
   return (
     <main className=" flex flex-col justify-center">
-      <Hero />
+      <HeroSection />
       <Features />
       <Stats />
       <Testimonials />

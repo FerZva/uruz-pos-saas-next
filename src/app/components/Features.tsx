@@ -8,25 +8,24 @@ const features = [
     icon: ShoppingCart,
     title: "Intuitive Interface",
     description:
-      "Simple and easy-to-use interface designed for speed and efficiency",
+      "Streamlined design for effortless transactions and management",
   },
   {
     icon: BarChart3,
-    title: "Real-time Analytics",
+    title: "Advanced Analytics",
     description:
-      "Get instant insights into your sales, inventory, and customer behavior",
+      "Gain deep insights into your business performance in real-time",
   },
   {
     icon: Zap,
     title: "Lightning Fast",
     description:
-      "Process transactions quickly with our optimized system architecture",
+      "Optimized for speed, ensuring smooth operations even during peak hours",
   },
   {
     icon: Shield,
-    title: "Secure Payments",
-    description:
-      "Enterprise-grade security for all your payment processing needs",
+    title: "Bank-Grade Security",
+    description: "State-of-the-art encryption and fraud prevention measures",
   },
 ];
 
@@ -47,7 +46,7 @@ const item = {
 
 export default function Features() {
   return (
-    <section className="bg-black py-20">
+    <section className="py-20">
       <div className="container m-auto">
         <motion.div
           variants={container}
@@ -60,14 +59,14 @@ export default function Features() {
             <motion.div
               key={index}
               variants={item}
-              className="group rounded-xl bg-gradient-to-br from-orange-500/10 to-amber-500/10 p-1"
+              className="group rounded-xl bg-gradient-to-br from-blue-500/10 to-blue-600/10 p-1 shadow-lg transition-all duration-300 hover:from-blue-500/20 hover:to-blue-600/20"
             >
-              <div className="h-full rounded-lg bg-gray-900/90 p-6">
-                <feature.icon className="mb-4 h-12 w-12 text-orange-500" />
-                <h3 className="mb-2 text-xl font-semibold text-white">
+              <div className="h-full rounded-lg bg-gray-900/90 p-6 backdrop-blur-sm">
+                <feature.icon className="mb-4 h-12 w-12 text-blue-400" />
+                <h3 className="mb-2 text-xl font-semibold text-blue-300">
                   {feature.title}
                 </h3>
-                <p className="text-gray-400">{feature.description}</p>
+                <p className="text-gray-300">{feature.description}</p>
               </div>
             </motion.div>
           ))}

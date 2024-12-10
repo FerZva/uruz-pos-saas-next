@@ -60,7 +60,7 @@ const Header: React.FC<HeaderProps> = ({ toggleMenu }) => {
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent
-                className="w-56 bg-slate-800"
+                className="w-56 dark:bg-slate-800"
                 align="end"
                 forceMount
               >

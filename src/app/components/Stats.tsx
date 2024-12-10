@@ -11,7 +11,7 @@ const stats = [
 
 export default function Stats() {
   return (
-    <section className="bg-black py-20">
+    <section className="py-20">
       <div className="container m-auto">
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
           {stats.map((stat, index) => (
@@ -23,10 +23,22 @@ export default function Stats() {
               transition={{ duration: 0.5, delay: index * 0.1 }}
               className="text-center"
             >
-              <div className="text-4xl font-bold text-orange-500">
+              <motion.div
+                initial={{ y: 20 }}
+                whileInView={{ y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="text-4xl font-bold text-blue-400"
+              >
                 {stat.value}
-              </div>
-              <div className="mt-2 text-gray-400">{stat.label}</div>
+              </motion.div>
+              <motion.div
+                initial={{ y: 20 }}
+                whileInView={{ y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 + 0.1 }}
+                className="mt-2 text-gray-300"
+              >
+                {stat.label}
+              </motion.div>
             </motion.div>
           ))}
         </div>
