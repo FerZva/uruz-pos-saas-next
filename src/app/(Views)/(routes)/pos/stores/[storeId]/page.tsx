@@ -2,16 +2,68 @@
 import { Product, Client } from "@/app/types/interfaces";
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
-import { saveAs } from "file-saver";
+import { toast } from "sonner";
 import Image from "next/image";
+import {
+  PDFViewer,
+  Document,
+  Page,
+  Text,
+  View,
+  StyleSheet,
+} from "@react-pdf/renderer";
+import Modal from "react-modal";
+
+const styles = StyleSheet.create({
+  page: { padding: 10, fontSize: 10 },
+  title: { fontSize: 14, marginBottom: 10, textAlign: "center" },
+  section: { marginBottom: 10 },
+  productRow: { flexDirection: "row", justifyContent: "space-between" },
+  footer: { marginTop: 20, textAlign: "center", fontStyle: "italic" },
+});
+
+const ReceiptDocument = ({ store, cart, totalAmount, printFormat }: any) => {
+  const isThermal = printFormat === "thermal";
+  return (
+    <Document>
+      <Page
+        size={isThermal ? [226.77, 283.46] : "LETTER"} // Thermal: 80x70mm
+        style={styles.page}
+      >
+        <View style={styles.section}>
+          <Text style={styles.title}>{store?.name}</Text>
+          <Text>Location: {store?.location}</Text>
+          <Text>Invoice</Text>
+        </View>
+        <View style={styles.section}>
+          <Text>Products:</Text>
+          {Object.values(cart).map(({ product, quantity }: any) => (
+            <View key={product.id} style={styles.productRow}>
+              <Text>{product.name}</Text>
+              <Text>
+                {quantity} x ${product.price.toFixed(2)} = $
+                {(quantity * product.price).toFixed(2)}
+              </Text>
+            </View>
+          ))}
+        </View>
+        <View style={styles.section}>
+          <Text>Total: ${totalAmount.toFixed(2)}</Text>
+        </View>
+        <View style={styles.footer}>
+          <Text>Thank you for your purchase!</Text>
+        </View>
+      </Page>
+    </Document>
+  );
+};
 
 const StoreProductsPage = () => {
   const { storeId } = useParams();
   const [store, setStore] = useState<{ name: string; location: string } | null>(
     null
   );
-
+  const [modalOpen, setModalOpen] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
   const [search, setSearch] = useState("");
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
@@ -90,7 +142,7 @@ const StoreProductsPage = () => {
 
   const handleRegisterSale = async () => {
     if (!selectedClient) {
-      alert("Please select a client before registering the sale.");
+      toast("Sale placed successfully.");
       return;
     }
 
@@ -119,189 +171,25 @@ const StoreProductsPage = () => {
         const store = await storeRes.json();
 
         // Generate PDF invoice
-        const pdfBytes = await generateReceiptPDF(
-          printFormat,
-          cart,
-          store,
-          calculateTotal()
-        );
-        const blob = new Blob([pdfBytes], { type: "application/pdf" });
-        saveAs(blob, `invoice_${printFormat}.pdf`);
+        setStore(store);
+        openPreviewModal();
         setCart({});
         fetchProducts(); // Refresh product stock
       } else {
         const error = await res.json();
-        alert(`Error: ${error.message}`);
+        toast.error(`Error: ${error.message}`);
       }
     } catch (error) {
       console.error("Failed to register sale:", error);
     }
   };
 
-  const generateReceiptPDF = async (
-    printFormat: "thermal" | "letter",
-    cart: any,
-    store: any,
-    totalAmount: number
-  ) => {
-    const pdfDoc = await PDFDocument.create();
-    const pageWidth = printFormat === "thermal" ? 200 : 612; // Thermal: ~58mm, Letter: ~8.5in
-    const pageHeight = printFormat === "thermal" ? 400 : 792; // Adjust height for the format
-    const margin = 10;
-
-    const page = pdfDoc.addPage([pageWidth, pageHeight]);
-
-    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-    const fontSize = printFormat === "thermal" ? 10 : 12;
-
-    let yPosition = pageHeight - margin;
-
-    // Store details
-    page.drawText(`${store.name}`, {
-      x: margin,
-      y: yPosition,
-      font,
-      size: fontSize + 2,
-      color: rgb(0, 0, 0),
-    });
-    yPosition -= fontSize + 5;
-
-    page.drawText(`Location: ${store.location}`, {
-      x: margin,
-      y: yPosition,
-      font,
-      size: fontSize,
-      color: rgb(0, 0, 0),
-    });
-    yPosition -= fontSize + 10;
-
-    page.drawText("Invoice", {
-      x: margin,
-      y: yPosition,
-      font,
-      size: fontSize + 2,
-      color: rgb(0, 0, 0),
-    });
-    yPosition -= fontSize + 10;
-
-    // Product Table Headers
-    page.drawText("Product", {
-      x: margin,
-      y: yPosition,
-      font,
-      size: fontSize,
-      color: rgb(0, 0, 0),
-    });
-    page.drawText("Qty", {
-      x: margin + 100,
-      y: yPosition,
-      font,
-      size: fontSize,
-      color: rgb(0, 0, 0),
-    });
-    page.drawText("Subtotal", {
-      x: margin + 140,
-      y: yPosition,
-      font,
-      size: fontSize,
-      color: rgb(0, 0, 0),
-    });
-    yPosition -= fontSize + 5;
-
-    // Product details
-    Object.values(cart).forEach(({ product, quantity }: any) => {
-      page.drawText(product.name, {
-        x: margin,
-        y: yPosition,
-        font,
-        size: fontSize,
-        color: rgb(0, 0, 0),
-      });
-      page.drawText(`${quantity}`, {
-        x: margin + 100,
-        y: yPosition,
-        font,
-        size: fontSize,
-        color: rgb(0, 0, 0),
-      });
-      page.drawText(`$${(product.price * quantity).toFixed(2)}`, {
-        x: margin + 140,
-        y: yPosition,
-        font,
-        size: fontSize,
-        color: rgb(0, 0, 0),
-      });
-      yPosition -= fontSize + 5;
-    });
-
-    // Total
-    yPosition -= fontSize;
-    page.drawText("Total:", {
-      x: margin,
-      y: yPosition,
-      font,
-      size: fontSize,
-      color: rgb(0, 0, 0),
-    });
-    page.drawText(`$${totalAmount.toFixed(2)}`, {
-      x: margin + 140,
-      y: yPosition,
-      font,
-      size: fontSize,
-      color: rgb(0, 0, 0),
-    });
-
-    // Footer
-    yPosition -= fontSize + 10;
-    page.drawText("Thank you for your purchase!", {
-      x: margin,
-      y: yPosition,
-      font,
-      size: fontSize,
-      color: rgb(0, 0, 0),
-    });
-
-    return await pdfDoc.save();
+  const openPreviewModal = () => {
+    setModalOpen(true);
   };
 
-  const handlePreviewReceipt = async () => {
-    if (!selectedClient) {
-      alert("Please select a client before previewing the receipt.");
-      return;
-    }
-
-    try {
-      const selectedFormat = printFormat;
-      let docWidth, docHeight;
-      if (selectedFormat === "letter") {
-        docWidth = 200;
-        docHeight = 612;
-      } else if (selectedFormat === "thermal") {
-        docWidth = 400; // Tamaño en mm para ticket
-        docHeight = 792; // Altura dinámica, se puede ajustar si se necesita
-      }
-      // Simular datos del carrito, tienda y total (reemplaza esto con los datos reales)
-      const storeInformation = {
-        name: store?.name,
-        location: store?.location,
-      };
-
-      const totalAmount = calculateTotal(); // Asegúrate de que esta función calcule correctamente el total // Cambia a "letter" si necesitas otro formato
-
-      // Llama a generateReceiptPDF con los argumentos requeridos
-      const pdfBytes = await generateReceiptPDF(
-        selectedFormat,
-        cart,
-        storeInformation,
-        totalAmount
-      );
-
-      const blob = new Blob([pdfBytes!], { type: "application/pdf" });
-      const url = URL.createObjectURL(blob);
-      window.open(url, "_blank");
-    } catch (error) {
-      console.error("Error generating preview:", error);
-    }
+  const closePreviewModal = () => {
+    setModalOpen(false);
   };
 
   useEffect(() => {
@@ -330,7 +218,7 @@ const StoreProductsPage = () => {
 
   return (
     <div className="p-8 flex w-full justify-between min-h-[93vh]">
-      <div>
+      <div className="pr-8">
         {store ? (
           <>
             <h1 className="text-xl font-bold">{store.name}</h1>
@@ -402,8 +290,8 @@ const StoreProductsPage = () => {
       </div>
 
       {/* Cart */}
-      <div className="border rounded-md p-2 min-h-full min-w-[400px] flex flex-col justify-between">
-        <div className=" p-4 bg-white dark:bg-slate-900">
+      <div className="border dark:bg-slate-800 rounded-md p-2 min-h-full min-w-[400px] flex flex-col justify-between">
+        <div className=" p-4 bg-white dark:bg-slate-800">
           <h2 className="text-xl font-bold mb-4">Shopping Cart</h2>
           {Object.values(cart).length === 0 ? (
             <p>Your cart is empty.</p>
@@ -464,12 +352,40 @@ const StoreProductsPage = () => {
           </div>
           {/* Register Sale Button */}
           <div className="w-full flex flex-col justify-stretch">
+            {/* PDF Viewer */}
+            <div className="mt-8">
+              {/* Botón para previsualizar */}
+
+              {/* Modal de previsualización */}
+              <Modal
+                isOpen={modalOpen}
+                onRequestClose={closePreviewModal}
+                contentLabel="Invoice Preview"
+                ariaHideApp={false}
+                className="w-3/4 h-3/4 m-auto mt-10 bg-white dark:bg-slate-800 shadow-lg p-4"
+              >
+                <h2 className="text-xl font-semibold mb-4">Invoice Preview</h2>
+                <PDFViewer width="100%" height="90%">
+                  <ReceiptDocument
+                    store={store}
+                    cart={cart}
+                    totalAmount={calculateTotal()}
+                    printFormat={printFormat}
+                  />
+                </PDFViewer>
+                <button
+                  onClick={closePreviewModal}
+                  className="mt-4 bg-red-500 text-white p-2 rounded"
+                >
+                  Close
+                </button>
+              </Modal>
+            </div>
             <button
-              onClick={handlePreviewReceipt}
-              disabled={Object.keys(cart).length === 0 || !selectedClient}
-              className="text-left"
+              onClick={openPreviewModal}
+              className="mb-4 bg-blue-500 text-white p-2 rounded"
             >
-              Preview Receipt
+              Invoice Preview
             </button>
             <button
               onClick={handleRegisterSale}

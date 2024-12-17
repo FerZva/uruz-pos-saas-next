@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import Link from "next/link";
 
 export function HeroSection() {
   return (
@@ -23,12 +24,14 @@ export function HeroSection() {
             one elegant solution.
           </p>
           <div className="flex justify-center gap-4">
-            <Button
-              size="lg"
-              className="bg-gradient-to-r from-blue-500 to-blue-600 text-white transition-all duration-300 hover:from-blue-600 hover:to-blue-700"
-            >
-              Get Started <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
+            <Link href="/api/auth/login">
+              <Button
+                size="lg"
+                className="bg-gradient-to-r from-blue-500 to-blue-600 text-white transition-all duration-300 hover:from-blue-600 hover:to-blue-700"
+              >
+                Get Started <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
             <Button
               size="lg"
               variant="outline"

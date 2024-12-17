@@ -45,7 +45,7 @@ export default function Footer() {
           </div>
         </div>
         <div className="mt-12 text-center text-gray-400">
-          <p>&copy; 2024 Your Elegant POS System. All rights reserved.</p>
+          <p>&copy; 2024 URUZ Point of sale system. All rights reserved.</p>
         </div>
       </div>
     </footer>
