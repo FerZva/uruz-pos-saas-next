@@ -2,7 +2,7 @@
 import { Product, Client } from "@/app/types/interfaces";
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import { toast } from "sonner";
+import { useToast } from "@/components/hooks/use-toast";
 import Image from "next/image";
 import {
   PDFViewer,
@@ -60,6 +60,7 @@ const ReceiptDocument = ({ store, cart, totalAmount, printFormat }: any) => {
 
 const StoreProductsPage = () => {
   const { storeId } = useParams();
+  const { toast } = useToast();
   const [store, setStore] = useState<{ name: string; location: string } | null>(
     null
   );
@@ -142,7 +143,10 @@ const StoreProductsPage = () => {
 
   const handleRegisterSale = async () => {
     if (!selectedClient) {
-      toast("Sale placed successfully.");
+      toast({
+        title: "Uh oh! Something went wrong.",
+        description: "There was a problem with your request.",
+      });
       return;
     }
 
@@ -177,7 +181,7 @@ const StoreProductsPage = () => {
         fetchProducts(); // Refresh product stock
       } else {
         const error = await res.json();
-        toast.error(`Error: ${error.message}`);
+        error(`Error: ${error.message}`);
       }
     } catch (error) {
       console.error("Failed to register sale:", error);
