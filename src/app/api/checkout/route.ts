@@ -22,8 +22,8 @@ export async function POST(request: Request) {
           quantity: 1,
         },
       ],
-      success_url: "http://localhost:3000/success",
-      cancel_url: "http://localhost:3000/subscription",
+      success_url: "http://localhost:3000/dashboard",
+      cancel_url: "http://localhost:3000",
     });
 
     console.log(session);

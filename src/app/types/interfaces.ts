@@ -64,3 +64,20 @@ export interface Sale {
     quantity: number;
   }[];
 }
+
+enum PopularPlanType {
+  NO = 0,
+  YES = 1,
+}
+
+export interface PricingProps {
+  nickName: string;
+  // popular: PopularPlanType;
+  unit_amount: number;
+  // description: string;
+  buttonText: string;
+  marketing_features: string[];
+  paymentLink?: string;
+  href: string;
+  billing: string;
+}
