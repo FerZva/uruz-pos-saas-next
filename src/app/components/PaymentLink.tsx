@@ -12,14 +12,15 @@ const PaymentLink = ({ href, paymentLink, text }: PaymentLinkProps) => {
   return (
     <Link
       href={href}
-      className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white transition-all duration-300 hover:from-blue-600 hover:to-blue-700"
       onClick={() => {
         if (paymentLink) {
           localStorage.setItem("stripePaymentLink", paymentLink);
         }
       }}
     >
-      {text}
+      <button className="min-w-full bg-blue-600 text-white transition-all duration-300 hover:bg-blue-700 py-2 rounded-md text-center">
+        {text}
+      </button>
     </Link>
   );
 };

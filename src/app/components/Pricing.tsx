@@ -192,17 +192,19 @@ export default function Pricing() {
                 <div className="mb-4 text-3xl font-bold text-white">
                   ${plan.unit_amount!}
                 </div>
-                {plan.paymentLink ? (
-                  <PaymentLink
-                    href={plan.href}
-                    paymentLink={plan.paymentLink}
-                    text={plan.buttonText}
-                  />
-                ) : (
-                  <Button disabled className="w-full bg-gray-500 text-white">
-                    Not Available
-                  </Button>
-                )}
+                <div className="w-full">
+                  {plan.paymentLink ? (
+                    <PaymentLink
+                      href={plan.href}
+                      paymentLink={plan.paymentLink}
+                      text={plan.buttonText}
+                    />
+                  ) : (
+                    <Button disabled className="w-full bg-gray-500 text-white">
+                      Not Available
+                    </Button>
+                  )}
+                </div>
               </div>
             </motion.div>
           ))}

@@ -12,5 +12,14 @@ export async function isUserSubscribed() {
 
   if (!existingUser) return { success: false };
 
-  return { success: true, subscribed: existingUser.plan === "premium" };
+  return {
+    success: true,
+    subscribed:
+      existingUser.plan === "enterpriseBasicMonthly" ||
+      existingUser.plan === "enterpriseBasicYearly" ||
+      existingUser.plan === "enterprisePlusMonthly" ||
+      existingUser.plan === "enterprisePlusYearly" ||
+      existingUser.plan === "enterprisePremiumMonthly" ||
+      existingUser.plan === "enterprisePremiumYearly",
+  };
 }
