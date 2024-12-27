@@ -16,12 +16,12 @@ datasource db {
 enum Plan {
   free
   premium
-  enterprise_basic_monthly
-  enterprise_basic_yearly
-  enterprise_plus_monthly
-  enterprise_plus_yearly
-  enterprise_premium_monthly
-  enterprise_premium_yearly
+  enterpriseBasicMonthly
+  enterpriseBasicYearly
+  enterprisePlusMonthly
+  enterprisePlusYearly
+  enterprisePremiumMonthly
+  enterprisePremiumYearly
 }
 
 enum Role {

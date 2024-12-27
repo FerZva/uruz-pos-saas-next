@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect } from "react";
+import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 import { Loader } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
@@ -7,40 +8,24 @@ import { checkAuthStatus } from "./actions";
 
 const CallBackPage = () => {
   const router = useRouter();
+  const { user } = useKindeBrowserClient();
   const { data } = useQuery({
     queryKey: ["checkAuthStatus"],
-    queryFn: async () => checkAuthStatus(),
+    queryFn: async () => await checkAuthStatus(),
   });
 
   useEffect(() => {
-    const priceId = localStorage.getItem("priceId");
-
-    if (data?.success && priceId) {
-      // Realiza la solicitud POST para generar la sesión de Stripe
-      const createCheckout = async () => {
-        const response = await fetch("/api/checkout", {
-          method: "POST",
-          body: JSON.stringify({ priceId }),
-          headers: { "Content-Type": "application/json" },
-        });
-
-        if (response.ok) {
-          const { url } = await response.json();
-          localStorage.removeItem("priceId"); // Limpia el localStorage
-          router.push(url); // Redirige al checkout
-        } else {
-          console.error("Error creating Stripe session");
-          router.push("/"); // Redirige a la página de suscripción
-        }
-      };
-
-      createCheckout();
+    const stripePaymentLink = localStorage.getItem("stripePaymentLink");
+    if (data?.success && stripePaymentLink && user?.email) {
+      localStorage.removeItem("stripePaymentLink");
+      router.push(stripePaymentLink + `?prefilled_email=${user.email}`);
     } else if (data?.success === false) {
-      router.push("/"); // Redirige al inicio si no está autenticado
+      router.push("/");
     }
-  }, [router, data]);
+  }, [router, user, data]);
 
-  if (data?.success) router.push("/dashboard");
+  if (data?.success) router.push("/");
+
   return (
     <div className="mt-20 w-full flex justify-center">
       <div className="flex flex-col items-center gap-2">

@@ -1,11 +1,9 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
 import { PricingProps } from "../types/interfaces";
-import Link from "next/link";
 import PaymentLink from "./PaymentLink";
 
 const pricingList: PricingProps[] = [
