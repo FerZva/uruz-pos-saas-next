@@ -42,8 +42,13 @@ export interface Store {
 export interface Product {
   id: string;
   name: string;
+  description: string;
   price: number;
   quantity: number;
+  productImage: string;
+  category: string;
+  taxes: number;
+  costPrice: number;
   providerId?: string;
   Provider?: { name: string };
   Store?: { id: string; name: string };

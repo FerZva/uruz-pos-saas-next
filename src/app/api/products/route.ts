@@ -32,26 +32,49 @@ export async function POST(request: Request) {
 }
 
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const storeId = searchParams.get("storeId");
-
-  const { getUser } = getKindeServerSession();
-  const user = await getUser();
-
-  if (!user?.id) {
-    return NextResponse.json(
-      { error: "User not authenticated" },
-      { status: 401 }
-    );
-  }
-
   try {
-    const products = await prisma.product.findMany({
-      where: { userId: user.id },
-      include: { Provider: true, Store: { select: { name: true } } },
-    });
+    const { searchParams } = new URL(request.url);
+    const page = parseInt(searchParams.get("page") || "1", 10);
+    const limit = parseInt(searchParams.get("limit") || "10", 10);
+    const storeId = searchParams.get("storeId");
 
-    return NextResponse.json(products);
+    const { getUser } = getKindeServerSession();
+    const user = await getUser();
+
+    if (!user?.id) {
+      return NextResponse.json(
+        { error: "User not authenticated" },
+        { status: 401 }
+      );
+    }
+
+    // Calcular el rango para la paginación
+    const skip = (page - 1) * limit;
+
+    // Consulta de productos con paginación
+    const [products, total] = await Promise.all([
+      prisma.product.findMany({
+        where: {
+          userId: user.id,
+          storeId: storeId || undefined, // Filtrar por storeId si está presente
+        },
+        include: { Provider: true, Store: { select: { name: true } } },
+        skip,
+        take: limit,
+        orderBy: { createdAt: "desc" }, // Ordenar por fecha de creación
+      }),
+      prisma.product.count({
+        where: {
+          userId: user.id,
+          storeId: storeId || undefined,
+        },
+      }),
+    ]);
+
+    // Calcular el total de páginas
+    const pages = Math.ceil(total / limit);
+
+    return NextResponse.json({ products, total, page, pages });
   } catch (error) {
     console.error(error);
     return NextResponse.json(

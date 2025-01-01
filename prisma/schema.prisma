@@ -95,19 +95,24 @@ model StoreTransaction {
 }
 
 model Product {
-  id         String     @id @default(cuid()) @map("_id")
-  name       String
-  price      Float
-  quantity   Int
-  userId     String?
-  User       User?      @relation(fields: [userId], references: [id])
-  storeId    String
-  providerId String
-  saleItem   SaleItem[]
-  Store      Store      @relation(fields: [storeId], references: [id])
-  Provider   Provider   @relation(fields: [providerId], references: [id])
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
+  id           String     @id @default(cuid()) @map("_id")
+  name         String
+  description  String?
+  price        Float
+  quantity     Int
+  productImage String?
+  category     String?
+  taxes        Float?
+  costPrice    Float?
+  userId       String?
+  User         User?      @relation(fields: [userId], references: [id])
+  storeId      String
+  providerId   String
+  saleItem     SaleItem[]
+  Store        Store      @relation(fields: [storeId], references: [id])
+  Provider     Provider   @relation(fields: [providerId], references: [id])
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 }
 
 model Provider {

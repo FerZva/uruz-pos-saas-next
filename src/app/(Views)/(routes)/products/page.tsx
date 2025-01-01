@@ -1,17 +1,36 @@
 "use client";
 import { Product } from "@/app/types/interfaces";
 import { useFetch } from "@/app/hooks/useFetch";
-import { LayoutGrid, List, Plus, Search } from "lucide-react";
+import {
+  LayoutGrid,
+  List,
+  Plus,
+  Search,
+  Ellipsis,
+  ArrowDownAZ,
+  ArrowDownZA,
+  ArrowDown01,
+  ArrowDown10,
+} from "lucide-react";
+import { Pagination } from "@/app/components/Pagination";
 import { useState, useEffect } from "react";
 import ProductFormModal from "@/app/components/ProductFormModal";
 import ProductEditFormModal from "@/app/components/EditProductModal";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const ProductsPage = () => {
-  const {
-    data: products,
-    loading,
-    error,
-  } = useFetch<Product[]>("/api/products");
+  const [page, setPage] = useState(1);
+  const limit = 10; // Número de productos por página
+  const { data, loading, error } = useFetch<{
+    products: Product[];
+    total: number;
+    page: number;
+    pages: number;
+  }>(`/api/products?page=${page}&limit=${limit}`);
 
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -19,6 +38,8 @@ const ProductsPage = () => {
   const [sortOption, setSortOption] = useState("");
   const [viewMode, setViewMode] = useState<"table" | "grid">("table");
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+
+  const { products, total, pages } = data || {};
 
   useEffect(() => {
     if (products) {
@@ -145,9 +166,24 @@ const ProductsPage = () => {
             >
               <LayoutGrid />
             </button>
-            <button onClick={() => setIsModalOpen(true)}>
-              <Plus />
-            </button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button onClick={() => setIsModalOpen(true)}>
+                  <Plus />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="flex flex-col dark:bg-slate-800">
+                <button
+                  onClick={() => setIsModalOpen(true)}
+                  className="px-2 dark:text-white p-1 mr-2 rounded-md hover:bg-slate-200 dark:hover:bg-slate-700 w-full"
+                >
+                  New product Manually
+                </button>
+                <button className="px-2 dark:text-white p-1 mr-2 rounded-md hover:bg-slate-200 dark:hover:bg-slate-700 w-full">
+                  new product from a file
+                </button>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>
@@ -174,11 +210,25 @@ const ProductsPage = () => {
         <table className="table-auto w-full">
           <thead>
             <tr className="bg-slate-200 dark:bg-slate-800 text-left">
-              <th className="p-2">Name</th>
-              <th className="p-2">Price</th>
-              <th className="p-2">Quantity</th>
-              <th className="p-2">Provider</th>
+              <th className="p-2">Image</th>
+              <th className="p-2 flex items-center cursor-pointer">
+                Name <ArrowDownAZ className="ml-2" />
+              </th>
+              <th className="p-2">Description</th>
+              <th className="p-2 flex items-center cursor-pointer">
+                Price <ArrowDown01 className="ml-2" />
+              </th>
+              <th className="p-2">Cost Price</th>
+              <th className="p-2">Taxes</th>
+              <th className="p-2 flex items-center cursor-pointer">
+                Provider
+                <ArrowDownAZ className="ml-2" />
+              </th>
               <th className="p-2">Store</th>
+              <th className="p-2 flex items-center cursor-pointer">
+                Stock
+                <ArrowDown01 className="ml-2" />
+              </th>
               <th className="p-2">Actions</th>
             </tr>
           </thead>
@@ -188,26 +238,39 @@ const ProductsPage = () => {
                 key={product.id}
                 className="hover:bg-slate-200 dark:hover:bg-slate-800"
               >
+                <td className="p-2">{product.productImage}</td>
                 <td className=" p-2">{product.name}</td>
+                <td className=" p-2">{product.description}</td>
                 <td className=" p-2">${product.price}</td>
-                <td className=" p-2">{product.quantity}</td>
+                <td className=" p-2">${product.costPrice}</td>
+                <td className=" p-2">${product.taxes}</td>
                 <td className=" p-2">{product.Provider?.name || "N/A"}</td>
                 <td className=" p-2">
                   {product.Store?.name || "Unknown Store"}
                 </td>
+                <td className=" p-2">{product.quantity}</td>
                 <td className=" p-2">
-                  <button
-                    onClick={() => setEditingProduct(product)}
-                    className="bg-blue-500 rounded-md px-2 text-white p-1 mr-2"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(product.id)}
-                    className="bg-red-500 rounded-md px-2 text-white p-1"
-                  >
-                    Delete
-                  </button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button className="flex items-center">
+                        <Ellipsis />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="flex flex-col dark:bg-slate-800">
+                      <button
+                        onClick={() => setEditingProduct(product)}
+                        className="px-2 dark:text-white p-1 mr-2 rounded-md hover:bg-slate-200 dark:hover:bg-slate-700 w-full"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(product.id)}
+                        className="px-2 dark:text-white p-1 rounded-md hover:bg-slate-200 dark:hover:bg-slate-700 w-full"
+                      >
+                        Delete
+                      </button>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </td>
               </tr>
             ))}
@@ -218,7 +281,7 @@ const ProductsPage = () => {
           {filteredProducts.map((product) => (
             <div
               key={product.id}
-              className="border p-4 flex flex-col items-start bg-slate-200 dark:bg-slate-800"
+              className="border p-4 flex flex-col items-start rounded bg-slate-200 dark:bg-slate-800"
             >
               <h2 className="text-lg font-bold">{product.name}</h2>
               <p>Price: ${product.price}</p>
@@ -243,6 +306,13 @@ const ProductsPage = () => {
           ))}
         </div>
       )}
+
+      {/* Pagination */}
+      <Pagination
+        currentPage={page}
+        totalPages={pages || 1}
+        onPageChange={(newPage: number) => setPage(newPage)}
+      />
     </div>
   );
 };

@@ -1,12 +1,23 @@
 "use client";
+import { useState } from "react";
 import { useFetch } from "@/app/hooks/useFetch";
 import { Sale } from "@/app/types/interfaces";
+import { Pagination } from "@/app/components/Pagination";
 
 const SalesPage = () => {
-  const { data: sales, loading, error } = useFetch<Sale[]>("/api/sales");
+  const [page, setPage] = useState(1);
+  const limit = 10; // Número de registros por página
+  const { data, loading, error } = useFetch<{
+    sales: Sale[];
+    total: number;
+    page: number;
+    pages: number;
+  }>(`/api/sales?page=${page}&limit=${limit}`);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
+
+  const { sales, total, pages } = data || {};
 
   return (
     <div className="p-8">
@@ -43,6 +54,11 @@ const SalesPage = () => {
           </tbody>
         </table>
       </div>
+      <Pagination
+        currentPage={page}
+        totalPages={pages || 1}
+        onPageChange={(newPage) => setPage(newPage)}
+      />
     </div>
   );
 };

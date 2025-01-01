@@ -55,7 +55,12 @@ export async function POST(req: Request) {
   }
 }
 
-export async function GET() {
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const page = parseInt(searchParams.get("page") || "1", 10);
+  const limit = parseInt(searchParams.get("limit") || "10", 10);
+  const offset = (page - 1) * limit;
+
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 
@@ -67,6 +72,10 @@ export async function GET() {
   }
 
   try {
+    const totalSales = await prisma.sale.count({
+      where: { userId: user.id },
+    });
+
     const sales = await prisma.sale.findMany({
       where: { userId: user.id },
       include: {
@@ -77,9 +86,16 @@ export async function GET() {
         },
       },
       orderBy: { date: "desc" },
+      take: limit,
+      skip: offset,
     });
 
-    return NextResponse.json(sales);
+    return NextResponse.json({
+      sales,
+      total: totalSales,
+      page,
+      pages: Math.ceil(totalSales / limit),
+    });
   } catch (error) {
     console.error(error);
     return NextResponse.json(
