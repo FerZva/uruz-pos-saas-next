@@ -41,6 +41,7 @@ export interface Store {
 
 export interface Product {
   id: string;
+  image: string | File | null;
   name: string;
   description: string;
   price: number;

@@ -15,10 +15,33 @@ export async function POST(request: Request) {
       );
     }
 
-    const { name, price, quantity, storeId, providerId } = await request.json();
+    const {
+      productImage,
+      name,
+      description,
+      category,
+      price,
+      costPrice,
+      taxes,
+      quantity,
+      storeId,
+      providerId,
+    } = await request.json();
 
     const product = await prisma.product.create({
-      data: { name, price, quantity, storeId, providerId, userId: user.id },
+      data: {
+        productImage,
+        name,
+        description,
+        category,
+        price,
+        costPrice,
+        taxes,
+        quantity,
+        storeId,
+        providerId,
+        userId: user.id,
+      },
     });
 
     return NextResponse.json(product, { status: 201 });
@@ -87,9 +110,21 @@ export async function GET(request: Request) {
 export async function PATCH(req: NextRequest) {
   try {
     const body = await req.json();
-    const { id, name, price, quantity, providerId } = body;
+    const {
+      id,
+      name,
+      description,
+      price,
+      costPrice,
+      taxes,
+      quantity,
+      productImage,
+      category,
+      providerId,
+      storeId,
+    } = body;
 
-    if (!id || !name || !price || !quantity || !providerId) {
+    if (!id || !name || !price || !quantity || !providerId || !storeId) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
@@ -98,7 +133,18 @@ export async function PATCH(req: NextRequest) {
 
     const updatedProduct = await prisma.product.update({
       where: { id },
-      data: { name, price: parseFloat(price), quantity, providerId },
+      data: {
+        name,
+        description,
+        price: parseFloat(price),
+        costPrice: costPrice ? parseFloat(costPrice) : null,
+        taxes: taxes ? parseFloat(taxes) : null,
+        quantity,
+        productImage,
+        category,
+        providerId,
+        storeId,
+      },
     });
 
     return NextResponse.json(updatedProduct);

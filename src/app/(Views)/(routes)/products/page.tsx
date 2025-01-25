@@ -11,7 +11,24 @@ import {
   ArrowDownZA,
   ArrowDown01,
   ArrowDown10,
+  FilePlus,
+  Package,
+  DollarSign,
+  Truck,
+  Store,
+  BarChart,
+  MoreVertical,
+  FilePenLine,
+  Trash2,
 } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Pagination } from "@/app/components/Pagination";
 import { useState, useEffect } from "react";
 import ProductFormModal from "@/app/components/ProductFormModal";
@@ -20,7 +37,12 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuGroup,
+  DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
+import Image from "next/image";
 
 const ProductsPage = () => {
   const [page, setPage] = useState(1);
@@ -173,15 +195,20 @@ const ProductsPage = () => {
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="flex flex-col dark:bg-slate-800">
-                <button
-                  onClick={() => setIsModalOpen(true)}
-                  className="px-2 dark:text-white p-1 mr-2 rounded-md hover:bg-slate-200 dark:hover:bg-slate-700 w-full"
-                >
-                  New product Manually
-                </button>
-                <button className="px-2 dark:text-white p-1 mr-2 rounded-md hover:bg-slate-200 dark:hover:bg-slate-700 w-full">
-                  new product from a file
-                </button>
+                <DropdownMenuLabel>New Product</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  <DropdownMenuItem
+                    onClick={() => setIsModalOpen(true)}
+                    className="cursor-pointer"
+                  >
+                    <Plus />
+                    Manually
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer">
+                    <FilePlus /> From a file (soon)
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -195,28 +222,34 @@ const ProductsPage = () => {
         onSubmit={handleCreate}
       />
 
-      <ProductEditFormModal
-        isOpen={!!editingProduct}
-        product={editingProduct}
-        onClose={() => setEditingProduct(null)}
-        onSubmit={async (updatedProduct) => {
-          await handleUpdate(updatedProduct);
-          setEditingProduct(null);
-        }}
-      />
+      {editingProduct && (
+        <ProductEditFormModal
+          isOpen={!!editingProduct}
+          product={editingProduct}
+          onClose={() => setEditingProduct(null)}
+          onSubmit={async (updatedProduct) => {
+            await handleUpdate(updatedProduct);
+            setEditingProduct(null);
+          }}
+        />
+      )}
 
       {/* Product List */}
       {viewMode === "table" ? (
         <table className="table-auto w-full">
           <thead>
             <tr className="bg-slate-200 dark:bg-slate-800 text-left">
+              {/* <th className="p-2">ID</th> */}
               <th className="p-2">Image</th>
               <th className="p-2 flex items-center cursor-pointer">
-                Name <ArrowDownAZ className="ml-2" />
+                Name
+                <ArrowDownAZ className="ml-2" />
               </th>
               <th className="p-2">Description</th>
+              <th className="p-2">Category</th>
               <th className="p-2 flex items-center cursor-pointer">
-                Price <ArrowDown01 className="ml-2" />
+                Price
+                <ArrowDown01 className="ml-2" />
               </th>
               <th className="p-2">Cost Price</th>
               <th className="p-2">Taxes</th>
@@ -238,9 +271,18 @@ const ProductsPage = () => {
                 key={product.id}
                 className="hover:bg-slate-200 dark:hover:bg-slate-800"
               >
-                <td className="p-2">{product.productImage}</td>
+                {/* <td className="p-2">{product.id}</td> */}
+                <td className="p-2">
+                  <Image
+                    src={product.productImage || "/placeholder.png"}
+                    width={50}
+                    height={50}
+                    alt={`${product.name}`}
+                  />
+                </td>
                 <td className=" p-2">{product.name}</td>
                 <td className=" p-2">{product.description}</td>
+                <td className="p-2">{product.category}</td>
                 <td className=" p-2">${product.price}</td>
                 <td className=" p-2">${product.costPrice}</td>
                 <td className=" p-2">${product.taxes}</td>
@@ -257,18 +299,20 @@ const ProductsPage = () => {
                       </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="flex flex-col dark:bg-slate-800">
-                      <button
+                      <DropdownMenuItem
+                        className="cursor-pointer"
                         onClick={() => setEditingProduct(product)}
-                        className="px-2 dark:text-white p-1 mr-2 rounded-md hover:bg-slate-200 dark:hover:bg-slate-700 w-full"
                       >
+                        <FilePenLine />
                         Edit
-                      </button>
-                      <button
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        className="cursor-pointer"
                         onClick={() => handleDelete(product.id)}
-                        className="px-2 dark:text-white p-1 rounded-md hover:bg-slate-200 dark:hover:bg-slate-700 w-full"
                       >
+                        <Trash2 />
                         Delete
-                      </button>
+                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </td>
@@ -279,30 +323,116 @@ const ProductsPage = () => {
       ) : (
         <div className="grid grid-cols-4 gap-4">
           {filteredProducts.map((product) => (
-            <div
+            <Card
+              className="w-full dark:bg-slate-800 max-w-sm items-stretch"
               key={product.id}
-              className="border p-4 flex flex-col items-start rounded bg-slate-200 dark:bg-slate-800"
             >
-              <h2 className="text-lg font-bold">{product.name}</h2>
-              <p>Price: ${product.price}</p>
-              <p>Quantity: {product.quantity}</p>
-              <p>Provider: {product.Provider?.name || "N/A"}</p>
-              <p>Store: {product.Store?.name || "Unknown Store"}</p>
-              <div className="mt-2 flex gap-2">
-                <button
-                  onClick={() => setEditingProduct(product)}
-                  className="bg-blue-500 rounded-md px-2 text-white p-1"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(product.id)}
-                  className="bg-red-500 rounded-md px-2 text-white p-1"
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
+              <CardHeader>
+                <div className="w-full h-48 bg-gray-200 rounded-md mb-4 overflow-hidden">
+                  <Image
+                    src={product.productImage || "/placeholder.png"}
+                    width={1000}
+                    height={1000}
+                    alt={`${product.name}`}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <CardTitle className="flex justify-between items-start">
+                  <span>{product.name}</span>
+                  <Badge variant="secondary">{product.category}</Badge>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button>
+                        <MoreVertical />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="flex flex-col dark:bg-slate-800">
+                      <DropdownMenuItem
+                        className="cursor-pointer"
+                        onClick={() => setEditingProduct(product)}
+                      >
+                        <FilePenLine />
+                        Edit
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        className="cursor-pointer"
+                        onClick={() => handleDelete(product.id)}
+                      >
+                        <Trash2 />
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-gray-500 mb-4">
+                  {product.description}
+                </p>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div className="flex items-center">
+                    <DollarSign className="w-4 h-4 mr-2" />
+                    <span>Price: ${product.price.toFixed(2)}</span>
+                  </div>
+                  <div className="flex items-center">
+                    <DollarSign className="w-4 h-4 mr-2" />
+                    <span>Cost: ${product.costPrice.toFixed(2)}</span>
+                  </div>
+                  <div className="flex items-center">
+                    <DollarSign className="w-4 h-4 mr-2" />
+                    <span>Taxes: ${product.taxes}</span>
+                  </div>
+                  <div className="flex items-center">
+                    <Truck className="w-4 h-4 mr-2" />
+                    <span>Provider: {product.Provider?.name || "N/A"}</span>
+                  </div>
+                  <div className="flex items-center">
+                    <Store className="w-4 h-4 mr-2" />
+                    <span>Store: {product.Store?.name || "Unknown Store"}</span>
+                  </div>
+                  <div className="flex items-center">
+                    <Package className="w-4 h-4 mr-2" />
+                    <span>Stock: {product.quantity}</span>
+                  </div>
+                </div>
+              </CardContent>
+              <CardFooter>
+                <div className="w-full flex justify-between items-center">
+                  <span className="text-sm text-gray-500">
+                    {/* ID: {product.id} */}
+                    ID: 1
+                  </span>
+                  <Badge variant="outline" className="flex items-center">
+                    <BarChart className="w-4 h-4 mr-1" />
+                    Profit: ${(product.price - product.costPrice).toFixed(2)}
+                  </Badge>
+                </div>
+              </CardFooter>
+            </Card>
+            // <div
+            //   key={product.id}
+            //   className="border p-4 flex flex-col items-start rounded bg-slate-200 dark:bg-slate-800"
+            // >
+            //   <h2 className="text-lg font-bold">{product.name}</h2>
+            //   <p>Price: ${product.price}</p>
+            //   <p>Quantity: {product.quantity}</p>
+            //   <p>Provider: {product.Provider?.name || "N/A"}</p>
+            //   <p>Store: {product.Store?.name || "Unknown Store"}</p>
+            //   <div className="mt-2 flex gap-2">
+            //     <button
+            //       onClick={() => setEditingProduct(product)}
+            //       className="bg-blue-500 rounded-md px-2 text-white p-1"
+            //     >
+            //       Edit
+            //     </button>
+            //     <button
+            //       onClick={() => handleDelete(product.id)}
+            //       className="bg-red-500 rounded-md px-2 text-white p-1"
+            //     >
+            //       Delete
+            //     </button>
+            //   </div>
+            // </div>
           ))}
         </div>
       )}
