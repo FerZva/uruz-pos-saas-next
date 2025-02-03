@@ -33,6 +33,8 @@ import { Pagination } from "@/app/components/Pagination";
 import { useState, useEffect } from "react";
 import ProductFormModal from "@/app/components/ProductFormModal";
 import ProductEditFormModal from "@/app/components/EditProductModal";
+import { SpreadsheetUpload } from "@/app/components/BulkProductsModal";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -56,6 +58,7 @@ const ProductsPage = () => {
 
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [sortOption, setSortOption] = useState("");
   const [viewMode, setViewMode] = useState<"table" | "grid">("table");
@@ -133,6 +136,21 @@ const ProductsPage = () => {
     await fetch(`/api/products?id=${id}`, { method: "DELETE" });
   };
 
+  const handleBulkUpload = async (products: Product[]) => {
+    const formData = new FormData();
+    const file = products[0].image as File;
+    formData.append("file", file);
+
+    const response = await fetch("/api/products/bulk", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (response.ok) {
+      setPage(1);
+    }
+  };
+
   if (loading) {
     return <div>Loading products...</div>;
   }
@@ -205,8 +223,11 @@ const ProductsPage = () => {
                     <Plus />
                     Manually
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="cursor-pointer">
-                    <FilePlus /> From a file (soon)
+                  <DropdownMenuItem
+                    className="cursor-pointer"
+                    onClick={() => setIsBulkModalOpen(true)}
+                  >
+                    <FilePlus /> From a file
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
               </DropdownMenuContent>
@@ -233,6 +254,13 @@ const ProductsPage = () => {
           }}
         />
       )}
+
+      {/* Bulk Products Modal */}
+      <SpreadsheetUpload
+        isOpen={isBulkModalOpen}
+        onClose={() => setIsBulkModalOpen(false)}
+        onUploadSuccess={handleBulkUpload}
+      />
 
       {/* Product List */}
       {viewMode === "table" ? (
@@ -409,30 +437,6 @@ const ProductsPage = () => {
                 </div>
               </CardFooter>
             </Card>
-            // <div
-            //   key={product.id}
-            //   className="border p-4 flex flex-col items-start rounded bg-slate-200 dark:bg-slate-800"
-            // >
-            //   <h2 className="text-lg font-bold">{product.name}</h2>
-            //   <p>Price: ${product.price}</p>
-            //   <p>Quantity: {product.quantity}</p>
-            //   <p>Provider: {product.Provider?.name || "N/A"}</p>
-            //   <p>Store: {product.Store?.name || "Unknown Store"}</p>
-            //   <div className="mt-2 flex gap-2">
-            //     <button
-            //       onClick={() => setEditingProduct(product)}
-            //       className="bg-blue-500 rounded-md px-2 text-white p-1"
-            //     >
-            //       Edit
-            //     </button>
-            //     <button
-            //       onClick={() => handleDelete(product.id)}
-            //       className="bg-red-500 rounded-md px-2 text-white p-1"
-            //     >
-            //       Delete
-            //     </button>
-            //   </div>
-            // </div>
           ))}
         </div>
       )}

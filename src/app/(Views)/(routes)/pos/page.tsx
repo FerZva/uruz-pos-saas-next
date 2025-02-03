@@ -25,7 +25,7 @@ import {
 const POSPage = () => {
   const router = useRouter();
   const { data: stores, loading, error } = useFetch<Store[]>("/api/stores");
-  const [editingStore, setEditingStore] = useState<Store | null>(null);
+  const [editingStore] = useState<Store | null>(null);
   const [isDialogOpen, setDialogOpen] = useState(false);
   const [isOpenCloseDialogOpen, setOpenCloseDialogOpen] = useState(false);
   const [isEditCreateDialogOpen, setEditCreateDialogOpen] = useState(false);
