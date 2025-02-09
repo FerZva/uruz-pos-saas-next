@@ -1,6 +1,6 @@
 "use client";
 import { useFetch } from "../../../hooks/useFetch";
-import { Employee } from "@/app/types/interfaces";
+import { Employee } from "../../../types/interfaces";
 import { useState } from "react";
 
 export default function EmployeesPage() {

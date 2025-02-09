@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useFetch } from "../../../hooks/useFetch";
-import { Client } from "@/app/types/interfaces";
+import { Client } from "../../../types/interfaces";
 
 const ClientsPage = () => {
   const {

@@ -1,6 +1,6 @@
 "use client";
-import { useFetch } from "@/app/hooks/useFetch";
-import { Provider } from "@/app/types/interfaces";
+import { useFetch } from "../../../hooks/useFetch";
+import { Provider } from "../../../types/interfaces";
 import { useState } from "react";
 
 const ProvidersPage = () => {

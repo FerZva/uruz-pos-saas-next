@@ -1,5 +1,5 @@
 import React from "react";
-import prisma from "@/app/lib/prisma";
+import prisma from "../../../lib/prisma";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";

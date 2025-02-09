@@ -1,5 +1,5 @@
 "use client";
-import { Product, Client } from "@/app/types/interfaces";
+import { Product, Client } from "../../../../../types/interfaces";
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { useToast } from "../../../../../../components/hooks/use-toast";

@@ -1,8 +1,8 @@
 "use client";
 import { useState } from "react";
-import { useFetch } from "@/app/hooks/useFetch";
-import { Sale } from "@/app/types/interfaces";
-import { Pagination } from "@/app/components/Pagination";
+import { useFetch } from "../../../hooks/useFetch";
+import { Sale } from "../../../types/interfaces";
+import { Pagination } from "../../../components/Pagination";
 
 const SalesPage = () => {
   const [page, setPage] = useState(1);

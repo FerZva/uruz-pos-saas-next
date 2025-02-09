@@ -1,5 +1,5 @@
 "use client";
-import { Product } from "@/app/types/interfaces";
+import { Product } from "../../../types/interfaces";
 import { useFetch } from "../../../../app/hooks/useFetch";
 import {
   LayoutGrid,
@@ -31,9 +31,9 @@ import {
 import { Badge } from "../../../../components/ui/badge";
 import { Pagination } from "../../../components/Pagination";
 import { useState, useEffect } from "react";
-import ProductFormModal from "@/app/components/ProductFormModal";
-import ProductEditFormModal from "@/app/components/EditProductModal";
-import { SpreadsheetUpload } from "@/app/components/BulkProductsModal";
+import ProductFormModal from "../../../components/ProductFormModal";
+import ProductEditFormModal from "../../../components/EditProductModal";
+import { SpreadsheetUpload } from "../../../components/BulkProductsModal";
 
 import {
   DropdownMenu,
@@ -43,7 +43,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuGroup,
   DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
+} from "../../../../components/ui/dropdown-menu";
 import Image from "next/image";
 
 const ProductsPage = () => {

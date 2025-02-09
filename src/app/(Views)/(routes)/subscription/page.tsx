@@ -1,4 +1,4 @@
-import ButtonCheckout from "@/app/components/ButtonCheckout";
+import ButtonCheckout from "../../../components/ButtonCheckout";
 import React from "react";
 import Stripe from "stripe";
 
