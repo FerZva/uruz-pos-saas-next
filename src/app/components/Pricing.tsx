@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
+import { Button } from "../../components/ui/button";
 import { Check } from "lucide-react";
 import { PricingProps } from "../types/interfaces";
 import PaymentLink from "./PaymentLink";

@@ -1,6 +1,6 @@
 "use client";
 import { useDropzone } from "react-dropzone";
-import { Textarea } from "@/components/ui/textarea";
+import { Textarea } from "../../components/ui/textarea";
 import {
   Upload,
   FileSpreadsheet,
@@ -8,7 +8,7 @@ import {
   AlertCircle,
   X,
 } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "../../hooks/use-toast";
 import React, { useEffect, useState } from "react";
 
 interface ProductFormModalProps {

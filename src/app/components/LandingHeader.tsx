@@ -5,7 +5,7 @@ import Link from "next/link";
 import React, { useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
+import { Button } from "../../components/ui/button";
 // import { useQuery } from "@tanstack/react-query";
 // import { isUserSubscribed } from "../(Views)/actions";
 

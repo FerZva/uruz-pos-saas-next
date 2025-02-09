@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "../../components/ui/button";
 
 type PaymentLinkProps = {
   href: string;

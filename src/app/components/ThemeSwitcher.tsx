@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useTheme } from "@/app/hooks/useTheme";
+import { useTheme } from "../hooks/useTheme";
 import { Computer, Moon, Sun } from "lucide-react";
 
 export default function ThemeSwitcher() {
