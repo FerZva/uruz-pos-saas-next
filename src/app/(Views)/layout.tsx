@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import Header from "../components/Header";
-import Sidebar from "@/app/components/Sidebar";
+import Sidebar from "../../app/components/Sidebar";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const [menu, setMenu] = useState(false);

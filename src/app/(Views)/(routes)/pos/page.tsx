@@ -1,6 +1,6 @@
 "use client";
 import { useFetch } from "../../../hooks/useFetch";
-import { Store } from "@/app/types/interfaces";
+import { Store } from "../../../types/interfaces";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {

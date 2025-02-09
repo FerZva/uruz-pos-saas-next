@@ -1,6 +1,6 @@
 "use client";
 import { useDropzone } from "react-dropzone";
-import { Textarea } from "@/components/ui/textarea";
+import { Textarea } from "../../components/ui/textarea";
 import { X } from "lucide-react";
 import React, { useEffect, useState } from "react";
 
