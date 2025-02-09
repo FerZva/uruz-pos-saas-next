@@ -1,5 +1,5 @@
-import prisma from "@/app/lib/prisma";
-import { stripe } from "@/app/lib/stripe";
+import prisma from "../../../lib/prisma";
+import { stripe } from "../../../lib/stripe";
 import { Plan } from "@prisma/client";
 import Stripe from "stripe";
 

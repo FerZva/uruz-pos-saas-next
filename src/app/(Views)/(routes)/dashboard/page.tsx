@@ -9,7 +9,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/app/components/ui/card";
+} from "../../../components/ui/card";
 import {
   Table,
   TableBody,
@@ -17,8 +17,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/app/components/ui/table";
-import { ChartBars } from "@/app/components/ChartsBars";
+} from "../../../components/ui/table";
+import { ChartBars } from "../../../components/ChartsBars";
 
 const DashboardPage = async () => {
   const { getUser } = getKindeServerSession();

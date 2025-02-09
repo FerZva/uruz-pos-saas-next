@@ -1,6 +1,6 @@
 import React from "react";
 import LandingHeader from "../components/LandingHeader";
-import Footer from "@/app/components/Footer";
+import Footer from "../components/Footer";
 
 const layout = ({ children }: { children: React.ReactNode }) => {
   return (

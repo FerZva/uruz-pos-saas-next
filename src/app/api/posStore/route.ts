@@ -1,6 +1,6 @@
 // GET Stores (all for a user or a specific store by ID)
 import { NextResponse } from "next/server";
-import prisma from "@/app/lib/prisma";
+import prisma from "../../lib/prisma";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
 export async function GET(req: Request) {

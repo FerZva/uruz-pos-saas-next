@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import prisma from "@/app/lib/prisma"; // Configuración de Prisma
+import prisma from "../../lib/prisma"; // Configuración de Prisma
 import * as XLSX from "xlsx";
 
 export async function POST(request: Request) {
