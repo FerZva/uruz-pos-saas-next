@@ -1,6 +1,6 @@
 "use client";
 import { Product } from "@/app/types/interfaces";
-import { useFetch } from "@/app/hooks/useFetch";
+import { useFetch } from "../../../../app/hooks/useFetch";
 import {
   LayoutGrid,
   List,
@@ -27,9 +27,9 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Pagination } from "@/app/components/Pagination";
+} from "../../../../components/ui/card";
+import { Badge } from "../../../../components/ui/badge";
+import { Pagination } from "../../../components/Pagination";
 import { useState, useEffect } from "react";
 import ProductFormModal from "@/app/components/ProductFormModal";
 import ProductEditFormModal from "@/app/components/EditProductModal";

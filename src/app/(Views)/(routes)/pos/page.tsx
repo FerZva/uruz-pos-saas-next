@@ -25,7 +25,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/components/ui/dialog";
+} from "../../../../components/ui/dialog";
 
 const POSPage = () => {
   const router = useRouter();
