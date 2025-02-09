@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useFetch } from "@/app/hooks/useFetch";
+import { useFetch } from "../../../hooks/useFetch";
 import { Client } from "@/app/types/interfaces";
 
 const ClientsPage = () => {
