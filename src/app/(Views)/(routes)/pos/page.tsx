@@ -1,9 +1,14 @@
 "use client";
-import { useFetch } from "@/app/hooks/useFetch";
+import { useFetch } from "../../../hooks/useFetch";
 import { Store } from "@/app/types/interfaces";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+} from "../../../components/ui/card";
 import { Pen, Ellipsis, Trash2, DoorOpen } from "lucide-react";
 import {
   DropdownMenu,
