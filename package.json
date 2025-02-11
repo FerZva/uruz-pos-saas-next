@@ -34,6 +34,7 @@
     "file-server": "^2.2.1",
     "framer": "^2.4.1",
     "framer-motion": "^10.18.0",
+    "typescript": "^5.7.3",
     "lucide-react": "^0.459.0",
     "motion": "^11.11.17",
     "next": "^15.0.3",
@@ -64,8 +65,8 @@
     "eslint": "^8",
     "eslint-config-next": "15.0.3",
     "postcss": "^8",
-    "prisma": "^5.22.0",
-    "typescript": "^5.7.3"
+    "prisma": "^5.22.0"
+    
   },
   "overrides": {
     "react-is": "^19.0.0-rc-69d4b800-20241021"
