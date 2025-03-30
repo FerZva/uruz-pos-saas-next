@@ -3,6 +3,7 @@ import { useFetch } from "../../../hooks/useFetch";
 import { Store } from "../../../types/interfaces";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import POSmachines from "../../../components/POSmachines";
 import {
   Card,
   CardHeader,
@@ -27,14 +28,54 @@ import {
   DialogFooter,
 } from "../../../../components/ui/dialog";
 
+const cashiers = [
+  {
+    id: 1,
+    name: "Cashier 1",
+    description: "Cashier 1",
+    store: "Game Station",
+    cashopening: 1500,
+    sales: 3000,
+    cashclosing: 4500,
+    status: "Open",
+    color: "bg-blue-500/10",
+  },
+  {
+    id: 2,
+    name: "Cashier 2",
+    description: "Cashier 2",
+    store: "Game Station",
+    cashopening: 1500,
+    sales: 3000,
+    cashclosing: 4500,
+    status: "Open",
+    color: "bg-green-500/10",
+  },
+  {
+    id: 3,
+    name: "Cashier 3",
+    description: "Cashier 3",
+    store: "GUCCI",
+    cashopening: 1500,
+    sales: 3000,
+    cashclosing: 4500,
+    status: "Open",
+    color: "bg-red-500/10",
+  },
+];
+
 const POSPage = () => {
   const router = useRouter();
+  const [selectedStoreName, setSelectedStoreName] = useState<string | null>(
+    null
+  );
   const { data: stores, loading, error } = useFetch<Store[]>("/api/stores");
   const [editingStore] = useState<Store | null>(null);
   const [isDialogOpen, setDialogOpen] = useState(false);
   const [isOpenCloseDialogOpen, setOpenCloseDialogOpen] = useState(false);
   const [isEditCreateDialogOpen, setEditCreateDialogOpen] = useState(false);
   const [selectedStore, setSelectedStore] = useState<Store | null>(null);
+  const [cashAmount, setCashAmount] = useState<number>(0);
   const [dialogAction, setDialogAction] = useState<"open" | "close" | null>(
     null
   );
@@ -45,8 +86,6 @@ const POSPage = () => {
     status: "closed",
     location: "",
   });
-
-  const [cashAmount, setCashAmount] = useState<number>(0);
 
   const handleTransaction = async () => {
     if (!selectedStore || !dialogAction) return;
@@ -205,12 +244,14 @@ const POSPage = () => {
               )}
 
               {store.status == "Open" && (
-                <button
-                  className="w-full bg-black hover:bg-gray-800 text-white rounded-md py-1"
-                  onClick={() => router.push(`/pos/stores/${store.id}`)}
-                >
-                  Go to store
-                </button>
+                <>
+                  <button
+                    className="w-full bg-black hover:bg-gray-800 text-white rounded-md py-1"
+                    onClick={() => router.push(`/pos/stores/${store.id}`)}
+                  >
+                    Go to store
+                  </button>
+                </>
               )}
             </div>
           </Card>
@@ -295,6 +336,36 @@ const POSPage = () => {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+      </div>
+      <div className="w-full flex flex-col mt-8">
+        <div className="flex justify-between mb-4">
+          <div className="">
+            <h2 className="text-2xl font-bold mb-4">POS Machines</h2>
+            <p className="mb-4">
+              Select a store to manage its POS machines. (feature coming soon)
+            </p>
+          </div>
+          <div>
+            <button>+</button>
+          </div>
+        </div>
+        <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-10">
+          {cashiers
+            .filter((cashier) => cashier.store === "Game Station")
+            .map((cashier) => (
+              <POSmachines
+                key={cashier.id}
+                posName={cashier.name}
+                posDescription={cashier.id.toString()}
+                storeName={cashier.store}
+                cashopeining={cashier.cashopening.toString()}
+                sales={cashier.sales.toString()}
+                cashclosing={cashier.cashclosing.toString()}
+                status={cashier.status}
+                posColor={cashier.color}
+              />
+            ))}
+        </div>
       </div>
     </div>
   );

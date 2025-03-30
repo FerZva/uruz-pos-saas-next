@@ -87,6 +87,7 @@ model CashRegister {
   id          String   @id @default(cuid()) @map("_id")
   storeId     String
   cashOpening Float
+  sales       Float
   cashClosing Float
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
