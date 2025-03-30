@@ -107,6 +107,7 @@ model StoreTransaction {
 
 model Product {
   id           String     @id @default(cuid()) @map("_id")
+  productCode  String     @unique
   name         String
   description  String?
   price        Float
@@ -124,6 +125,12 @@ model Product {
   Provider     Provider   @relation(fields: [providerId], references: [id])
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
+}
+
+model Counter {
+  id        String @id @default(cuid()) @map("_id")
+  modelName String @unique
+  count     Int    @default(0)
 }
 
 model Provider {

@@ -101,7 +101,7 @@ export function SpreadsheetUpload({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[900px]">
+      <DialogContent className="sm:max-w-[900px] bg-slate-800">
         <DialogHeader>
           <DialogTitle>Upload Product Spreadsheet</DialogTitle>
           <DialogDescription>

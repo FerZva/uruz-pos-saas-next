@@ -3,6 +3,11 @@ import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../lib/prisma";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
+function formatProductCode(count: number): string {
+  const padLength = count > 9999999 ? 8 : 7;
+  return "PROD" + count.toString().padStart(padLength, "0");
+}
+
 export async function POST(request: Request) {
   try {
     const { getUser } = getKindeServerSession();
@@ -28,8 +33,17 @@ export async function POST(request: Request) {
       providerId,
     } = await request.json();
 
+    const counter = await prisma.counter.upsert({
+      where: { modelName: "Product" },
+      update: { count: { increment: 1 } },
+      create: { modelName: "Product", count: 1 },
+    });
+
+    const productCode = formatProductCode(counter.count);
+
     const product = await prisma.product.create({
       data: {
+        productCode,
         productImage,
         name,
         description,

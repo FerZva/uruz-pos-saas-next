@@ -268,12 +268,13 @@ const ProductsPage = () => {
           <thead>
             <tr className="bg-slate-200 dark:bg-slate-800 text-left">
               {/* <th className="p-2">ID</th> */}
+              <th className="p-2">#</th>
               <th className="p-2">Image</th>
               <th className="p-2 flex items-center cursor-pointer">
                 Name
                 <ArrowDownAZ className="ml-2" />
               </th>
-              <th className="p-2">Description</th>
+              <th className="p-2 w-auto">Description</th>
               <th className="p-2">Category</th>
               <th className="p-2 flex items-center cursor-pointer">
                 Price
@@ -300,6 +301,7 @@ const ProductsPage = () => {
                 className="hover:bg-slate-200 dark:hover:bg-slate-800"
               >
                 {/* <td className="p-2">{product.id}</td> */}
+                <td className="p-2">{product.productCode}</td>
                 <td className="p-2">
                   <Image
                     src={product.productImage || "/placeholder.png"}
@@ -428,7 +430,7 @@ const ProductsPage = () => {
                 <div className="w-full flex justify-between items-center">
                   <span className="text-sm text-gray-500">
                     {/* ID: {product.id} */}
-                    ID: 1
+                    ID: {product.productCode}
                   </span>
                   <Badge variant="outline" className="flex items-center">
                     <BarChart className="w-4 h-4 mr-1" />

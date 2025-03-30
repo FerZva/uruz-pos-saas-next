@@ -13,7 +13,7 @@ const Siderbar: React.FC<SidebarProps> = ({ menu }) => {
   return (
     <div
       className={`w-full ${
-        menu ? "max-w-[300px]" : "max-w-[100px]"
+        menu ? "max-w-[200px]" : "max-w-[100px]"
       } min-h-screen bg-slate-200 dark:bg-slate-800 py-4`}
     >
       <div
